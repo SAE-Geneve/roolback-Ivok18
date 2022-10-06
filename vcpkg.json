@@ -1,0 +1,13 @@
+{
+    "name": "rollbackgame",
+    "version-string": "1.0",
+    "dependencies": [
+      "freetype",
+      "sfml",
+      "imgui-sfml",
+      "gtest",
+      "fmt",
+      "spdlog",
+      "sqlite3"
+    ]
+}
