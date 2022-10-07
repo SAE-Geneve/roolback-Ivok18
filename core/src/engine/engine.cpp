@@ -121,7 +121,8 @@ void Engine::Update(sf::Time dt) const
         system->Update(dt);
     }
     ImGui::SFML::Update(*window_, dt);
-    window_->clear(sf::Color(192, 192, 192, 255));
+    const sf::Color windowColor(192, 192, 192, 255);
+    window_->clear(windowColor);
 
     for(auto* drawInterface : drawInterfaces_)
     {

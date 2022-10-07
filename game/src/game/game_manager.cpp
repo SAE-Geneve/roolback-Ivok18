@@ -121,11 +121,11 @@ void ClientGameManager::Begin()
     ZoneScoped;
 #endif
     //load textures
-    if (!bulletTexture_.loadFromFile("data/sprites/bullet.png"))
+    if (!bulletTexture_.loadFromFile("data/sprites/ball.png"))
     {
         core::LogError("Could not load bullet sprite");
     }
-    if (!shipTexture_.loadFromFile("data/sprites/ship.png"))
+    if (!shipTexture_.loadFromFile("data/sprites/player.png"))
     {
         core::LogError("Could not load ship sprite");
     }
