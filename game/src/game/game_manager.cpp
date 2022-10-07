@@ -219,7 +219,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
     ZoneScoped;
 #endif
     UpdateCameraView();
-    target.setView(cameraView_);
+    target.setView(originalView_);
 
     starBackground_.Draw(target);
     spriteManager_.Draw(target);
@@ -505,6 +505,8 @@ void ClientGameManager::UpdateCameraView()
             }
         }
     }
+
+    //disable zoom
     cameraView_.zoom(currentZoom);
 
 }
