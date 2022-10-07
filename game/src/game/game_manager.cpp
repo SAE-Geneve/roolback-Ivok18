@@ -221,7 +221,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
     UpdateCameraView();
     target.setView(originalView_);
 
-    starBackground_.Draw(target);
+    //starBackground_.Draw(target);
     spriteManager_.Draw(target);
 
     if(drawPhysics_)
