@@ -66,24 +66,25 @@ constexpr float fixedPeriod = 0.02f; //50fps
 
 constexpr std::array<core::Color, std::max(4u, maxPlayerNmb)> playerColors
 {
-    core::Color::red(),
     core::Color::blue(),
+    core::Color::red(),
     core::Color::yellow(),
     core::Color::cyan()
 };
 
 constexpr std::array<core::Vec2f, std::max(4u, maxPlayerNmb)> spawnPositions
 {
-    core::Vec2f(0,1),
-    core::Vec2f(0,-1),
-    core::Vec2f(1,0),
-    core::Vec2f(-1,0),
+    core::Vec2f(-3,0),
+    core::Vec2f(3,0),
+    core::Vec2f(0,0),
+    core::Vec2f(0,0),
+    
 };
 
 constexpr std::array<core::Degree, std::max(4u, maxPlayerNmb)> spawnRotations
 {
-    core::Degree(0.0f),
     core::Degree(180.0f),
+    core::Degree(0.0f),
     core::Degree(-90.0f),
     core::Degree(90.0f)
 };
