@@ -121,13 +121,17 @@ void ClientGameManager::Begin()
     ZoneScoped;
 #endif
     //load textures
-    if (!bulletTexture_.loadFromFile("data/sprites/ball.png"))
+    if (!ballTexture_.loadFromFile("data/sprites/ball.png"))
     {
         core::LogError("Could not load bullet sprite");
     }
-    if (!shipTexture_.loadFromFile("data/sprites/player.png"))
+    if (!playerLeftTexture_.loadFromFile("data/sprites/playerLeft.png"))
     {
-        core::LogError("Could not load ship sprite");
+        core::LogError("Could not load left-side player sprite");
+    }
+    if (!playerRightTexture_.loadFromFile("data/sprites/playerRight.png"))
+    {
+        core::LogError("Could not right-side player sprite");
     }
     //load fonts
     if (!font_.loadFromFile("data/fonts/8-bit-hud.ttf"))
@@ -323,8 +327,15 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f posit
     GameManager::SpawnPlayer(playerNumber, position, rotation);
     const auto entity = GetEntityFromPlayerNumber(playerNumber);
     spriteManager_.AddComponent(entity);
-    spriteManager_.SetTexture(entity, shipTexture_);
-    spriteManager_.SetOrigin(entity, sf::Vector2f(shipTexture_.getSize()) / 2.0f);
+    if(playerNumber == 0)
+    {
+        spriteManager_.SetTexture(entity, playerLeftTexture_);
+    }
+    else if(playerNumber == 1)
+    {
+        spriteManager_.SetTexture(entity, playerRightTexture_);
+    }
+    spriteManager_.SetOrigin(entity, sf::Vector2f(playerLeftTexture_.getSize()) / 2.0f);
     spriteManager_.SetColor(entity, playerColors[playerNumber]);
 
 }
@@ -334,8 +345,8 @@ core::Entity ClientGameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec
     const auto entity = GameManager::SpawnBullet(playerNumber, position, velocity);
 
     spriteManager_.AddComponent(entity);
-    spriteManager_.SetTexture(entity, bulletTexture_);
-    spriteManager_.SetOrigin(entity, sf::Vector2f(bulletTexture_.getSize()) / 2.0f);
+    spriteManager_.SetTexture(entity, ballTexture_);
+    spriteManager_.SetOrigin(entity, sf::Vector2f(ballTexture_.getSize()) / 2.0f);
     spriteManager_.SetColor(entity, playerColors[playerNumber]);
 
     return entity;

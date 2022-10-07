@@ -105,8 +105,9 @@ protected:
     unsigned long long startingTime_ = 0;
     std::uint32_t state_ = 0;
 
-    sf::Texture shipTexture_;
-    sf::Texture bulletTexture_;
+    sf::Texture playerLeftTexture_;
+    sf::Texture playerRightTexture_;
+    sf::Texture ballTexture_;
     sf::Font font_;
 
     sf::Text textRenderer_;
