@@ -23,7 +23,7 @@ void BulletManager::FixedUpdate(sf::Time dt)
         {
             continue;
         }
-        if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::BULLET)))
+        /*if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::BULLET)))
         {
             auto& bullet = components_[entity];
             bullet.remainingTime -= dt.asSeconds();
@@ -32,6 +32,7 @@ void BulletManager::FixedUpdate(sf::Time dt)
                 gameManager_.DestroyBullet(entity);
             }
         }
+        */
     }
 }
 }

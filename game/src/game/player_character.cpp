@@ -49,19 +49,22 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
 
         physicsManager_.SetBody(playerEntity, playerBody);
 
-        if (playerCharacter.invincibilityTime > 0.0f)
+        /*if (playerCharacter.invincibilityTime > 0.0f)
         {
             playerCharacter.invincibilityTime -= dt.asSeconds();
             SetComponent(playerEntity, playerCharacter);
         }
+        */
+
         //Check if playerCharacter cannot shoot, and increase shootingTime
-        if (playerCharacter.shootingTime < playerShootingPeriod)
+        /*if (playerCharacter.shootingTime < playerShootingPeriod)
         {
             playerCharacter.shootingTime += dt.asSeconds();
             SetComponent(playerEntity, playerCharacter);
         }
+        */
         //Shooting mechanism
-        if (playerCharacter.shootingTime >= playerShootingPeriod)
+        /*/if (playerCharacter.shootingTime >= playerShootingPeriod)
         {
             if (input & PlayerInputEnum::PlayerInput::SHOOT)
             {
@@ -76,7 +79,7 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
                 playerCharacter.shootingTime = 0.0f;
                 SetComponent(playerEntity, playerCharacter);
             }
-        }
+        }*/
     }
 }
 }

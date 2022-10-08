@@ -44,7 +44,6 @@ core::Entity GameManager::GetEntityFromPlayerNumber(PlayerNumber playerNumber) c
     return playerEntityMap_[playerNumber];
 }
 
-
 void GameManager::SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame)
 {
     if (playerNumber == INVALID_PLAYER)
@@ -53,6 +52,7 @@ void GameManager::SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerIn
     rollbackManager_.SetPlayerInput(playerNumber, playerInput, inputFrame);
 
 }
+
 void GameManager::Validate(Frame newValidateFrame)
 {
 
@@ -352,7 +352,6 @@ core::Entity ClientGameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec
     return entity;
 }
 
-
 void ClientGameManager::FixedUpdate()
 {
 
@@ -414,7 +413,6 @@ void ClientGameManager::FixedUpdate()
     currentFrame_++;
     rollbackManager_.StartNewFrame(currentFrame_);
 }
-
 
 void ClientGameManager::SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame)
 {
