@@ -43,9 +43,9 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
         dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.asSeconds()));
 
         //const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
-        //const auto velocity = ((down ? core::Vec2f(0, -playerSpeed) : core::Vec2f::zero() + (up ? 1.0f : 0.0f)) * dir;
+        const auto velocity = ((down ? core::Vec2f(0, -playerSpeed) : core::Vec2f::zero() + (up ? core::Vec2f(0, playerSpeed) : core::Vec2f::zero())));
 
-        //playerBody.velocity += acceleration * dt.asSeconds();
+        playerBody.velocity = velocity * dt.asSeconds();
 
         physicsManager_.SetBody(playerEntity, playerBody);
 

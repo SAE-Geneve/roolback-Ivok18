@@ -36,7 +36,7 @@ using Frame = std::uint32_t;
  */
 constexpr std::uint32_t maxPlayerNmb = 2;
 constexpr short playerHealth = 5;
-constexpr float playerSpeed = 1.0f;
+constexpr float playerSpeed = 100.0f;
 constexpr core::Degree playerAngularSpeed = core::Degree(90.0f);
 constexpr float playerShootingPeriod = 0.3f;
 constexpr float bulletSpeed = 2.0f;
@@ -74,8 +74,8 @@ constexpr std::array<core::Color, std::max(4u, maxPlayerNmb)> playerColors
 
 constexpr std::array<core::Vec2f, std::max(4u, maxPlayerNmb)> spawnPositions
 {
-    core::Vec2f(-3,0),
-    core::Vec2f(3,0),
+    core::Vec2f(-3.f,0),
+    core::Vec2f(3.f,0),
     core::Vec2f(0,0),
     core::Vec2f(0,0),
     
