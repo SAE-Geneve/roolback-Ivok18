@@ -132,4 +132,13 @@ void SimulationServer::SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumb
     gameManager_.SpawnPlayer(playerNumber, pos, rotation);
     SendReliablePacket(std::move(spawnPlayer));
 }
+
+void SimulationServer::SpawnNewBall()
+{
+    auto spawnBallPacket = std::make_unique<SpawnBallPacket>();
+    spawnBallPacket->packetType = PacketType::SPAWN_BALL;
+    core::LogDebug("[Server] Spawn new ball");
+    SendReliablePacket(std::move(spawnBallPacket));
+}
+
 }

@@ -16,7 +16,7 @@ enum class PacketType : std::uint8_t
     JOIN = 0u,
     SPAWN_PLAYER,
     INPUT,
-    SPAWN_BULLET,
+    SPAWN_BALL,
     VALIDATE_STATE,
     START_GAME,
     JOIN_ACK,
@@ -146,7 +146,28 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnPlayerPacket& spawnPlayer
         spawnPlayerPacket.pos >> spawnPlayerPacket.angle;
 }
 
-    
+/**
+ * \brief SpawnBallPacket is a TCP Packet sent by the server to all clients to notify of the spawn of a new ball
+ */
+struct SpawnBallPacket : TypedPacket<PacketType::SPAWN_BALL>
+{
+    std::array<std::uint8_t, sizeof(ClientId)> clientId{};
+    PlayerNumber playerNumber = INVALID_PLAYER;
+    std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
+    std::array<std::uint8_t, sizeof(core::Degree)> angle{};
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBallPacket& spawnBallPacket)
+{
+    return packet << spawnBallPacket.clientId << spawnBallPacket.playerNumber <<
+        spawnBallPacket.pos << spawnBallPacket.angle;
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, SpawnBallPacket& spawnBallPacket)
+{
+    return packet >> spawnBallPacket.clientId >> spawnBallPacket.playerNumber >>
+        spawnBallPacket.pos >> spawnBallPacket.angle;
+}
 /**
  * \brief PlayerInputPacket is a UDP Packet sent by the player client and then replicated by the server to all clients to share the currentFrame
  * and all the previous ones player inputs.
@@ -250,6 +271,12 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
         packet << packetTmp;
         break;
     }
+    case PacketType::SPAWN_BALL:
+    {
+        const auto& packetTmp = static_cast<SpawnBallPacket&>(sendingPacket);
+        packet << packetTmp;
+        break;
+    }
     case PacketType::INPUT:
     {
         const auto& packetTmp = static_cast<PlayerInputPacket&>(sendingPacket);
@@ -309,6 +336,13 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
         spawnPlayerPacket->packetType = packetTmp.packetType;
         packet >> *spawnPlayerPacket;
         return spawnPlayerPacket;
+    }
+    case PacketType::SPAWN_BALL:
+    {
+        auto spawnBallPacket = std::make_unique<SpawnBallPacket>();
+        spawnBallPacket->packetType = packetTmp.packetType;
+        packet >> *spawnBallPacket;
+        return spawnBallPacket;
     }
     case PacketType::INPUT:
     {

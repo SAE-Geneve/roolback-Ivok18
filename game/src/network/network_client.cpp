@@ -249,7 +249,7 @@ void NetworkClient::ReceivePacket(const Packet* packet)
         debugDb_.StorePacket(inputPacket);
         break;
     }
-    case PacketType::SPAWN_BULLET: break;
+    case PacketType::SPAWN_BALL: break;
     case PacketType::VALIDATE_STATE:
     {
         auto* validateStatePacket = static_cast<const ValidateFramePacket*>(packet);

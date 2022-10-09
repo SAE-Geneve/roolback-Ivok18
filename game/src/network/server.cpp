@@ -39,6 +39,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 
             if (lastPlayerNumber_ == maxPlayerNmb)
             {
+                SpawnNewBall();
                 auto startGamePacket = std::make_unique<StartGamePacket>();
                 startGamePacket->packetType = PacketType::START_GAME;
                 core::LogDebug("Send Start Game Packet");

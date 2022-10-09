@@ -47,6 +47,7 @@ public:
     
 protected:
     void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) override;
+    void SpawnNewBall() override;
 
 private:
     void ProcessReceivePacket(std::unique_ptr<Packet> packet,

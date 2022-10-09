@@ -116,13 +116,14 @@ void SimulationClient::ReceivePacket(const Packet* packet)
     {
     case PacketType::JOIN: break;
     case PacketType::SPAWN_PLAYER: break;
-    case PacketType::INPUT:
+    case PacketType
+        :
     {
         auto* inputPacket = static_cast<const PlayerInputPacket*>(packet);
         debugDb_.StorePacket(inputPacket);
         break;
     }
-    case PacketType::SPAWN_BULLET: break;
+    case PacketType::SPAWN_BALL: break;
     case PacketType::VALIDATE_STATE:
     {
         auto* validateStatePacket = static_cast<const ValidateFramePacket*>(packet);

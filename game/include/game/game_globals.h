@@ -76,9 +76,8 @@ constexpr std::array<core::Vec2f, std::max(4u, maxPlayerNmb)> spawnPositions
 {
     core::Vec2f(-3.f,0),
     core::Vec2f(3.f,0),
-    core::Vec2f(0,0),
-    core::Vec2f(0,0),
-    
+    core::Vec2f(0,0), 
+    core::Vec2f(0,0), 
 };
 
 constexpr std::array<core::Degree, std::max(4u, maxPlayerNmb)> spawnRotations

@@ -361,7 +361,7 @@ void RollbackManager::SpawnBullet(PlayerNumber playerNumber, core::Entity entity
     bulletBox.extends = core::Vec2f::one() * bulletScale * 0.5f;
 
     currentBulletManager_.AddComponent(entity);
-    currentBulletManager_.SetComponent(entity, { bulletPeriod, playerNumber });
+    currentBulletManager_.SetComponent(entity, { 0 });
 
     currentPhysicsManager_.AddBody(entity);
     currentPhysicsManager_.SetBody(entity, bulletBody);

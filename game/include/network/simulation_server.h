@@ -37,6 +37,7 @@ private:
 	void ProcessReceivePacket(std::unique_ptr<Packet> packet);
 
 	void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) override;
+	void SpawnNewBall() override;
 
 	std::vector<DelayPacket> receivedPackets_;
 	std::vector<DelayPacket> sentPackets_;

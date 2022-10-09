@@ -215,6 +215,13 @@ void NetworkServer::SpawnNewPlayer([[maybe_unused]] ClientId clientId, [[maybe_u
         SendReliablePacket(std::move(spawnPlayer));
     }
 }
+void NetworkServer::SpawnNewBall()
+{
+    auto spawnBallPacket = std::make_unique<SpawnBallPacket>();
+    spawnBallPacket->packetType = PacketType::SPAWN_BALL;
+    core::LogDebug("[Server] Spawn new ball");
+    SendReliablePacket(std::move(spawnBallPacket));
+}
 
 
 void NetworkServer::ProcessReceivePacket(

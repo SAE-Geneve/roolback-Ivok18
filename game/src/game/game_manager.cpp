@@ -123,7 +123,7 @@ void ClientGameManager::Begin()
     //load textures
     if (!ballTexture_.loadFromFile("data/sprites/ball.png"))
     {
-        core::LogError("Could not load bullet sprite");
+        core::LogError("Could not load ball sprite");
     }
     if (!playerLeftTexture_.loadFromFile("data/sprites/playerLeft.png"))
     {

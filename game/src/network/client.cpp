@@ -144,9 +144,15 @@ void Client::ReceivePacket(const Packet* packet)
             rto_ = srtt_ + std::max(g, k * rttvar_);
             currentPing_ = srtt_;
         }
+        break;
 
     }
-    case PacketType::SPAWN_BULLET: break;
+    case PacketType::SPAWN_BALL:
+    {
+        core::LogDebug("Ball");
+        //gameManager_.SpawnBullet(0,spawnPositions[2], core::Vec2f::zero());
+        break;
+    }
     default:;
     }
 
