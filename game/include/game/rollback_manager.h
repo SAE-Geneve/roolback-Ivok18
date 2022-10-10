@@ -1,5 +1,5 @@
 #pragma once
-#include "bullet_manager.h"
+#include "ball_manager.h"
 #include "game_globals.h"
 #include "physics_manager.h"
 #include "player_character.h"
@@ -92,13 +92,13 @@ private:
     core::TransformManager currentTransformManager_;
     PhysicsManager currentPhysicsManager_;
     PlayerCharacterManager currentPlayerManager_;
-    BulletManager currentBulletManager_;
+    BallManager currentBallManager_;
     /**
      * Last Validate (confirm frame) Component Managers used for rollback
      */
     PhysicsManager lastValidatePhysicsManager_;
     PlayerCharacterManager lastValidatePlayerManager_;
-    BulletManager lastValidateBulletManager_;
+    BallManager lastValidateBallManager_;
 
     /**
      * \brief lastValidateFrame_ is the last validated frame from the server side.

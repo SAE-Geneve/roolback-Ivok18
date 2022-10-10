@@ -72,13 +72,13 @@ core::Entity GameManager::SpawnBall(core::Vec2f position, core::Vec2f velocity)
 
     transformManager_.AddComponent(entity);
     transformManager_.SetPosition(entity, position);
-    transformManager_.SetScale(entity, core::Vec2f::one() * bulletScale);
+    transformManager_.SetScale(entity, core::Vec2f::one() * ballScale);
     transformManager_.SetRotation(entity, core::Degree(0.0f));
     rollbackManager_.SpawnBall(entity, position, velocity);
     return entity;
 }
 
-void GameManager::DestroyBullet(core::Entity entity)
+void GameManager::DestroyBall(core::Entity entity)
 {
     rollbackManager_.DestroyEntity(entity);
 }
@@ -347,7 +347,7 @@ core::Entity ClientGameManager::SpawnBall(core::Vec2f position, core::Vec2f velo
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, ballTexture_);
     spriteManager_.SetOrigin(entity, sf::Vector2f(ballTexture_.getSize()) / 2.0f);
-    spriteManager_.SetColor(entity, playerColors[0]);
+    spriteManager_.SetColor(entity, core::Color::black());
 
     return entity;
 }

@@ -30,7 +30,7 @@ public:
     virtual ~GameManager() = default;
     virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
     virtual core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity);
-    virtual void DestroyBullet(core::Entity entity);
+    virtual void DestroyBall(core::Entity entity);
     [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
     [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
     [[nodiscard]] Frame GetLastValidateFrame() const { return rollbackManager_.GetLastValidateFrame(); }

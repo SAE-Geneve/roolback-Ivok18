@@ -39,9 +39,9 @@ constexpr short playerHealth = 5;
 constexpr float playerSpeed = 100.0f;
 constexpr core::Degree playerAngularSpeed = core::Degree(90.0f);
 constexpr float playerShootingPeriod = 0.3f;
-constexpr float bulletSpeed = 2.0f;
-constexpr float bulletScale = 0.5f;
-constexpr float bulletPeriod = 3.0f;
+constexpr float ballSpeed = 2.0f;
+constexpr float ballScale = 0.75f;
+//constexpr float bulletPeriod = 3.0f;
 constexpr float playerInvincibilityPeriod = 1.5f;
 constexpr float invincibilityFlashPeriod = 0.5f;
 
@@ -91,7 +91,7 @@ constexpr std::array<core::Degree, std::max(4u, maxPlayerNmb)> spawnRotations
 enum class ComponentType : core::EntityMask
 {
     PLAYER_CHARACTER = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE),
-    BULLET = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 1u,
+    BALL = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 1u,
     ASTEROID = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 2u,
     PLAYER_INPUT = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 3u,
     DESTROYED = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 4u,
