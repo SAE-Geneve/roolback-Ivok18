@@ -66,7 +66,7 @@ void GameManager::Validate(Frame newValidateFrame)
     rollbackManager_.ValidateFrame(newValidateFrame);
 }
 
-core::Entity GameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity)
+core::Entity GameManager::SpawnBall(core::Vec2f position, core::Vec2f velocity)
 {
     const core::Entity entity = entityManager_.CreateEntity();
 
@@ -74,7 +74,7 @@ core::Entity GameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec2f pos
     transformManager_.SetPosition(entity, position);
     transformManager_.SetScale(entity, core::Vec2f::one() * bulletScale);
     transformManager_.SetRotation(entity, core::Degree(0.0f));
-    rollbackManager_.SpawnBullet(playerNumber, entity, position, velocity);
+    rollbackManager_.SpawnBall(entity, position, velocity);
     return entity;
 }
 
@@ -340,14 +340,14 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f posit
 
 }
 
-core::Entity ClientGameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity)
+core::Entity ClientGameManager::SpawnBall(core::Vec2f position, core::Vec2f velocity)
 {
-    const auto entity = GameManager::SpawnBullet(playerNumber, position, velocity);
+    const auto entity = GameManager::SpawnBall(position, velocity);
 
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, ballTexture_);
     spriteManager_.SetOrigin(entity, sf::Vector2f(ballTexture_.getSize()) / 2.0f);
-    spriteManager_.SetColor(entity, playerColors[playerNumber]);
+    spriteManager_.SetColor(entity, playerColors[0]);
 
     return entity;
 }

@@ -73,7 +73,7 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
                     ((core::Vec2f::Dot(playerBody.velocity, dir) > 0.0f ? currentPlayerSpeed : 0.0f)
                         + bulletSpeed);
                 const auto bulletPosition = playerBody.position + dir * 0.5f + playerBody.velocity * dt.asSeconds();
-                gameManager_.SpawnBullet(playerCharacter.playerNumber,
+                gameManager_.SpawnBall(playerCharacter.playerNumber,
                     bulletPosition,
                     bulletVelocity);
                 playerCharacter.shootingTime = 0.0f;

@@ -150,7 +150,7 @@ void Client::ReceivePacket(const Packet* packet)
     case PacketType::SPAWN_BALL:
     {
         core::LogDebug("Ball");
-        //gameManager_.SpawnBullet(0,spawnPositions[2], core::Vec2f::zero());
+        gameManager_.SpawnBall(spawnPositions[2], core::Vec2f::zero());
         break;
     }
     default:;

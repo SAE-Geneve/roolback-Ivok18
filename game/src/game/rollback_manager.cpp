@@ -350,7 +350,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
     }
 }
 
-void RollbackManager::SpawnBullet(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Vec2f velocity)
+void RollbackManager::SpawnBall(core::Entity entity, core::Vec2f position, core::Vec2f velocity)
 {
     createdEntities_.push_back({ entity, testedFrame_ });
 
