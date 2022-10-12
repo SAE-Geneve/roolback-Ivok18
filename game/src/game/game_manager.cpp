@@ -83,6 +83,18 @@ void GameManager::DestroyBall(core::Entity entity)
     rollbackManager_.DestroyEntity(entity);
 }
 
+core::Entity GameManager::SpawnBoundary(core::Vec2f position)
+{
+    const core::Entity entity = entityManager_.CreateEntity();
+
+    transformManager_.AddComponent(entity);
+    transformManager_.SetPosition(entity, position);
+    transformManager_.SetScale(entity, core::Vec2f::one() * boundaryScale);
+    transformManager_.SetRotation(entity, core::Degree(0.0f));
+    rollbackManager_.SpawnBoundary(entity, position);
+    return entity;
+}
+
 PlayerNumber GameManager::CheckWinner() const
 {
     int alivePlayer = 0;
@@ -131,8 +143,13 @@ void ClientGameManager::Begin()
     }
     if (!playerRightTexture_.loadFromFile("data/sprites/playerRight.png"))
     {
-        core::LogError("Could not right-side player sprite");
+        core::LogError("Could not load right-side player sprite");
     }
+    if(!boundaryTexture_.loadFromFile("data/sprites/boundary.png"))
+    {
+        core::LogError("Could not load boundary sprite");
+    }
+
     //load fonts
     if (!font_.loadFromFile("data/fonts/8-bit-hud.ttf"))
     {
@@ -347,6 +364,18 @@ core::Entity ClientGameManager::SpawnBall(core::Vec2f position, core::Vec2f velo
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, ballTexture_);
     spriteManager_.SetOrigin(entity, sf::Vector2f(ballTexture_.getSize()) / 2.0f);
+    spriteManager_.SetColor(entity, core::Color::black());
+
+    return entity;
+}
+
+core::Entity ClientGameManager::SpawnBoundary(core::Vec2f position)
+{
+    const auto entity = GameManager::SpawnBoundary(position);
+
+    spriteManager_.AddComponent(entity);
+    spriteManager_.SetTexture(entity, boundaryTexture_);
+    spriteManager_.SetOrigin(entity, sf::Vector2f(boundaryTexture_.getSize()) / 2.0f);
     spriteManager_.SetColor(entity, core::Color::black());
 
     return entity;

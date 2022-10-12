@@ -17,6 +17,7 @@ enum class PacketType : std::uint8_t
     SPAWN_PLAYER,
     INPUT,
     SPAWN_BALL,
+    SPAWN_BOUNDARY,
     VALIDATE_STATE,
     START_GAME,
     JOIN_ACK,
@@ -168,6 +169,30 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnBallPacket& spawnBallPack
     return packet >> spawnBallPacket.clientId >> spawnBallPacket.playerNumber >>
         spawnBallPacket.pos >> spawnBallPacket.angle;
 }
+
+/**
+ * \brief SpawnBoundaryPacket is a TCP packet sent to all clients to notify of the spawn of a new boundary
+ */
+struct SpawnBoundaryPacket : TypedPacket<PacketType::SPAWN_BOUNDARY>
+{
+    std::array<std::uint8_t, sizeof(ClientId)> clientId{};
+    PlayerNumber playerNumber = INVALID_PLAYER;
+    std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
+    std::array<std::uint8_t, sizeof(core::Degree)> angle{};
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBoundaryPacket& spawnBoundaryPacket)
+{
+    return packet << spawnBoundaryPacket.clientId << spawnBoundaryPacket.playerNumber <<
+        spawnBoundaryPacket.pos << spawnBoundaryPacket.angle;
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, SpawnBoundaryPacket& spawnBoundaryPacket)
+{
+    return packet >> spawnBoundaryPacket.clientId >> spawnBoundaryPacket.playerNumber >>
+        spawnBoundaryPacket.pos >> spawnBoundaryPacket.angle;
+}
+
 /**
  * \brief PlayerInputPacket is a UDP Packet sent by the player client and then replicated by the server to all clients to share the currentFrame
  * and all the previous ones player inputs.
@@ -277,6 +302,12 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
         packet << packetTmp;
         break;
     }
+    case PacketType::SPAWN_BOUNDARY:
+    {
+        const auto& packetTmp = static_cast<SpawnBoundaryPacket&>(sendingPacket);
+        packet << packetTmp;
+        break;
+    }
     case PacketType::INPUT:
     {
         const auto& packetTmp = static_cast<PlayerInputPacket&>(sendingPacket);
@@ -343,6 +374,13 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
         spawnBallPacket->packetType = packetTmp.packetType;
         packet >> *spawnBallPacket;
         return spawnBallPacket;
+    }
+    case PacketType::SPAWN_BOUNDARY:
+    {
+        auto spawnBoundaryPacket = std::make_unique<SpawnBoundaryPacket>();
+        spawnBoundaryPacket->packetType = packetTmp.packetType;
+        packet >> *spawnBoundaryPacket;
+        return spawnBoundaryPacket;
     }
     case PacketType::INPUT:
     {

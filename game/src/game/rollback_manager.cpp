@@ -16,8 +16,11 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
     currentTransformManager_(entityManager),
     currentPhysicsManager_(entityManager), currentPlayerManager_(entityManager, currentPhysicsManager_, gameManager_),
     currentBallManager_(entityManager, gameManager),
+    currentBoundaryManager_(entityManager, gameManager),
     lastValidatePhysicsManager_(entityManager),
-    lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_), lastValidateBallManager_(entityManager, gameManager)
+    lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_),
+	lastValidateBallManager_(entityManager, gameManager),
+    lastValidateBoundaryManager_(entityManager, gameManager)
 {
     for (auto& input : inputs_)
     {
@@ -56,6 +59,7 @@ void RollbackManager::SimulateToCurrentFrame()
     currentBallManager_.CopyAllComponents(lastValidateBallManager_.GetAllComponents());
     currentPhysicsManager_.CopyAllComponents(lastValidatePhysicsManager_);
     currentPlayerManager_.CopyAllComponents(lastValidatePlayerManager_.GetAllComponents());
+    currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
 
     for (Frame frame = lastValidateFrame + 1; frame <= currentFrame; frame++)
     {
@@ -78,6 +82,7 @@ void RollbackManager::SimulateToCurrentFrame()
         currentBallManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPlayerManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPhysicsManager_.FixedUpdate(sf::seconds(fixedPeriod));
+        currentBoundaryManager_.FixedUpdate(sf::seconds(fixedPeriod));
     }
     //Copy the physics states to the transforms
     for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
@@ -178,6 +183,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
     currentBallManager_.CopyAllComponents(lastValidateBallManager_.GetAllComponents());
     currentPhysicsManager_.CopyAllComponents(lastValidatePhysicsManager_);
     currentPlayerManager_.CopyAllComponents(lastValidatePlayerManager_.GetAllComponents());
+    currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
 
     //We simulate the frames until the new validated frame
     for (Frame frame = lastValidateFrame_ + 1; frame <= newValidateFrame; frame++)
@@ -209,6 +215,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
     lastValidateBallManager_.CopyAllComponents(currentBallManager_.GetAllComponents());
     lastValidatePlayerManager_.CopyAllComponents(currentPlayerManager_.GetAllComponents());
     lastValidatePhysicsManager_.CopyAllComponents(currentPhysicsManager_);
+    currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
     lastValidateFrame_ = newValidateFrame;
     createdEntities_.clear();
 }
@@ -368,10 +375,51 @@ void RollbackManager::SpawnBall(core::Entity entity, core::Vec2f position, core:
     currentPhysicsManager_.AddBox(entity);
     currentPhysicsManager_.SetBox(entity, ballBox);
 
+    lastValidateBallManager_.AddComponent(entity);
+    lastValidateBallManager_.SetComponent(entity, { 0 });
+
+    lastValidatePhysicsManager_.AddBody(entity);
+    lastValidatePhysicsManager_.SetBody(entity, ballBody);
+    lastValidatePhysicsManager_.AddBox(entity);
+    lastValidatePhysicsManager_.SetBox(entity, ballBox);
+
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
     currentTransformManager_.SetScale(entity, core::Vec2f::one() * ballScale);
     currentTransformManager_.SetRotation(entity, core::Degree(0.0f));
+}
+
+void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
+{
+    createdEntities_.push_back({ entity, testedFrame_ });
+
+    Body boundaryBody;
+    boundaryBody.position = position;
+    boundaryBody.velocity = core::Vec2f::zero();
+    Box boundaryBox;
+    boundaryBox.extends = core::Vec2f::one() * boundaryScale;
+
+    currentBoundaryManager_.AddComponent(entity);
+    currentBoundaryManager_.SetComponent(entity, {position});
+
+    currentPhysicsManager_.AddBody(entity);
+    currentPhysicsManager_.SetBody(entity, boundaryBody);
+    currentPhysicsManager_.AddBox(entity);
+    currentPhysicsManager_.SetBox(entity, boundaryBox);
+
+    lastValidateBoundaryManager_.AddComponent(entity);
+    lastValidateBoundaryManager_.SetComponent(entity, { position });
+
+    lastValidatePhysicsManager_.AddBody(entity);
+    lastValidatePhysicsManager_.SetBody(entity, boundaryBody);
+    lastValidatePhysicsManager_.AddBox(entity);
+    lastValidatePhysicsManager_.SetBox(entity, boundaryBox);
+
+    currentTransformManager_.AddComponent(entity);
+    currentTransformManager_.SetPosition(entity, position);
+    currentTransformManager_.SetScale(entity, core::Vec2f::one() * boundaryScale);
+    currentTransformManager_.SetRotation(entity, core::Degree(0.0f));
+
 }
 
 void RollbackManager::DestroyEntity(core::Entity entity)

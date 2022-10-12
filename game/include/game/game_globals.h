@@ -41,6 +41,7 @@ constexpr core::Degree playerAngularSpeed = core::Degree(90.0f);
 constexpr float playerShootingPeriod = 0.3f;
 constexpr float ballSpeed = 2.0f;
 constexpr float ballScale = 0.75f;
+constexpr float boundaryScale = 1.5f;
 //constexpr float bulletPeriod = 3.0f;
 constexpr float playerInvincibilityPeriod = 1.5f;
 constexpr float invincibilityFlashPeriod = 0.5f;
@@ -95,6 +96,7 @@ enum class ComponentType : core::EntityMask
     ASTEROID = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 2u,
     PLAYER_INPUT = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 3u,
     DESTROYED = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 4u,
+    BOUNDARY = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 5u,
 };
 
 /**

@@ -6,6 +6,7 @@
 #include "engine/entity.h"
 #include "engine/transform.h"
 #include "network/packet_type.h"
+#include "boundary_manager.h"
 
 
 
@@ -67,6 +68,7 @@ public:
     [[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return currentPlayerManager_; }
     void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
     void SpawnBall(core::Entity entity, core::Vec2f position, core::Vec2f velocity);
+    void SpawnBoundary(core::Entity entity, core::Vec2f position);
     /**
      * \brief DestroyEntity is a method that does not destroy the entity definitely, but puts the DESTROY flag on.
      * An entity is truly destroyed when the destroy frame is validated.
@@ -93,13 +95,14 @@ private:
     PhysicsManager currentPhysicsManager_;
     PlayerCharacterManager currentPlayerManager_;
     BallManager currentBallManager_;
+    BoundaryManager currentBoundaryManager_;
     /**
      * Last Validate (confirm frame) Component Managers used for rollback
      */
     PhysicsManager lastValidatePhysicsManager_;
     PlayerCharacterManager lastValidatePlayerManager_;
     BallManager lastValidateBallManager_;
-
+    BoundaryManager lastValidateBoundaryManager_;
     /**
      * \brief lastValidateFrame_ is the last validated frame from the server side.
      */

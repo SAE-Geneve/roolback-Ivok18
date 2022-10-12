@@ -149,7 +149,22 @@ void Client::ReceivePacket(const Packet* packet)
     }
     case PacketType::SPAWN_BALL:
     {
-        gameManager_.SpawnBall(spawnPositions[2], core::Vec2f::zero());
+        gameManager_.SpawnBall(core::Vec2f::zero(), core::Vec2f::zero());
+        break;
+    }
+    case PacketType::SPAWN_BOUNDARY:
+    {
+        /*TODO
+         *1) create boundary types : up and down
+         *2) encapsulate boundaries spawn in one function:
+         *gameManager_.SpawnBoundaries();
+			 -gameManager_.SpawnBoundary(core::Vec2f::zero(), BoundaryType::TOP);
+			 -gameManager_.SpawnBoundary(core::Vec2f::zero(), BoundaryType::DOWN);
+         */
+        float value = 4.3f;
+        gameManager_.SpawnBoundary(core::Vec2f(0, value));
+        gameManager_.SpawnBoundary(core::Vec2f(0, -value));
+        //gameManager_.SpawnBoundary(core::Vec2f(0, -3));
         break;
     }
     default:;
