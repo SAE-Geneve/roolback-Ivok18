@@ -32,6 +32,7 @@ public:
     virtual core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity);
     virtual void DestroyBall(core::Entity entity);
     virtual core::Entity SpawnBoundary(core::Vec2f position);
+    virtual void SpawnBoundaries(float distanceFromCenter);
     [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
     [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
     [[nodiscard]] Frame GetLastValidateFrame() const { return rollbackManager_.GetLastValidateFrame(); }

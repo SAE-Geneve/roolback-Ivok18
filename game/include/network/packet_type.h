@@ -17,7 +17,7 @@ enum class PacketType : std::uint8_t
     SPAWN_PLAYER,
     INPUT,
     SPAWN_BALL,
-    SPAWN_BOUNDARY,
+    SPAWN_BOUNDARIES,
     VALIDATE_STATE,
     START_GAME,
     JOIN_ACK,
@@ -152,45 +152,37 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnPlayerPacket& spawnPlayer
  */
 struct SpawnBallPacket : TypedPacket<PacketType::SPAWN_BALL>
 {
-    std::array<std::uint8_t, sizeof(ClientId)> clientId{};
-    PlayerNumber playerNumber = INVALID_PLAYER;
     std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
     std::array<std::uint8_t, sizeof(core::Degree)> angle{};
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBallPacket& spawnBallPacket)
 {
-    return packet << spawnBallPacket.clientId << spawnBallPacket.playerNumber <<
-        spawnBallPacket.pos << spawnBallPacket.angle;
+    return packet << spawnBallPacket.pos << spawnBallPacket.angle;
 }
 
 inline sf::Packet& operator>>(sf::Packet& packet, SpawnBallPacket& spawnBallPacket)
 {
-    return packet >> spawnBallPacket.clientId >> spawnBallPacket.playerNumber >>
-        spawnBallPacket.pos >> spawnBallPacket.angle;
+    return packet >> spawnBallPacket.pos >> spawnBallPacket.angle;
 }
 
 /**
  * \brief SpawnBoundaryPacket is a TCP packet sent to all clients to notify of the spawn of a new boundary
  */
-struct SpawnBoundaryPacket : TypedPacket<PacketType::SPAWN_BOUNDARY>
+struct SpawnBoundariesPacket : TypedPacket<PacketType::SPAWN_BOUNDARIES>
 {
-    std::array<std::uint8_t, sizeof(ClientId)> clientId{};
-    PlayerNumber playerNumber = INVALID_PLAYER;
-    std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
-    std::array<std::uint8_t, sizeof(core::Degree)> angle{};
+	std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
 };
 
-inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBoundaryPacket& spawnBoundaryPacket)
+inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBoundariesPacket& spawnBoundariesPacket)
 {
-    return packet << spawnBoundaryPacket.clientId << spawnBoundaryPacket.playerNumber <<
-        spawnBoundaryPacket.pos << spawnBoundaryPacket.angle;
+    return packet << spawnBoundariesPacket.pos;
 }
 
-inline sf::Packet& operator>>(sf::Packet& packet, SpawnBoundaryPacket& spawnBoundaryPacket)
+inline sf::Packet& operator>>(sf::Packet& packet, SpawnBoundariesPacket& spawnBoundariesPacket)
 {
-    return packet >> spawnBoundaryPacket.clientId >> spawnBoundaryPacket.playerNumber >>
-        spawnBoundaryPacket.pos >> spawnBoundaryPacket.angle;
+   
+    return packet >> spawnBoundariesPacket.pos;
 }
 
 /**
@@ -302,9 +294,9 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
         packet << packetTmp;
         break;
     }
-    case PacketType::SPAWN_BOUNDARY:
+    case PacketType::SPAWN_BOUNDARIES:
     {
-        const auto& packetTmp = static_cast<SpawnBoundaryPacket&>(sendingPacket);
+        const auto& packetTmp = static_cast<SpawnBoundariesPacket&>(sendingPacket);
         packet << packetTmp;
         break;
     }
@@ -375,12 +367,12 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
         packet >> *spawnBallPacket;
         return spawnBallPacket;
     }
-    case PacketType::SPAWN_BOUNDARY:
+    case PacketType::SPAWN_BOUNDARIES:
     {
-        auto spawnBoundaryPacket = std::make_unique<SpawnBoundaryPacket>();
-        spawnBoundaryPacket->packetType = packetTmp.packetType;
-        packet >> *spawnBoundaryPacket;
-        return spawnBoundaryPacket;
+        auto spawnBoundariesPacket = std::make_unique<SpawnBoundariesPacket>();
+        spawnBoundariesPacket->packetType = packetTmp.packetType;
+        packet >> *spawnBoundariesPacket;
+        return spawnBoundariesPacket;
     }
     case PacketType::INPUT:
     {

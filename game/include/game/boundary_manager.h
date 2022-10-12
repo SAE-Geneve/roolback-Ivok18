@@ -7,7 +7,7 @@
 namespace game
 {
 /**
-* \brief Ball is a struct that contains info about the ball (when it will be destroyed)
+* \brief Boundary is a struct that contains info about the boundary (when it will be destroyed)
 */
 struct Boundary
 {

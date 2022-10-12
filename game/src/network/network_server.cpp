@@ -222,7 +222,13 @@ void NetworkServer::SpawnNewBall()
     core::LogDebug("[Server] Spawn new ball");
     SendReliablePacket(std::move(spawnBallPacket));
 }
-
+void NetworkServer::SpawnNewBoundaries()
+{
+    auto spawnBoundariesPacket = std::make_unique<SpawnBoundariesPacket>();
+    spawnBoundariesPacket->packetType = PacketType::SPAWN_BOUNDARIES;
+    core::LogDebug("[Server] Spawn game boundaries");
+    SendReliablePacket(std::move(spawnBoundariesPacket));
+}
 
 void NetworkServer::ProcessReceivePacket(
     std::unique_ptr<Packet> packet,

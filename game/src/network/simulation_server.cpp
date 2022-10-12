@@ -141,4 +141,12 @@ void SimulationServer::SpawnNewBall()
     SendReliablePacket(std::move(spawnBallPacket));
 }
 
+void SimulationServer::SpawnNewBoundaries()
+{
+    auto spawnBoundariesPacket = std::make_unique<SpawnBoundariesPacket>();
+    spawnBoundariesPacket->packetType = PacketType::SPAWN_BOUNDARIES;
+    core::LogDebug("[Server] Spawn game boundaries");
+    SendReliablePacket(std::move(spawnBoundariesPacket));
+}
+
 }

@@ -38,6 +38,7 @@ private:
 
 	void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) override;
 	void SpawnNewBall() override;
+	void SpawnNewBoundaries() override;
 
 	std::vector<DelayPacket> receivedPackets_;
 	std::vector<DelayPacket> sentPackets_;

@@ -386,7 +386,6 @@ void RollbackManager::SpawnBall(core::Entity entity, core::Vec2f position, core:
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
     currentTransformManager_.SetScale(entity, core::Vec2f::one() * ballScale);
-    currentTransformManager_.SetRotation(entity, core::Degree(0.0f));
 }
 
 void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
@@ -418,8 +417,6 @@ void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
     currentTransformManager_.SetScale(entity, core::Vec2f::one() * boundaryScale);
-    currentTransformManager_.SetRotation(entity, core::Degree(0.0f));
-
 }
 
 void RollbackManager::DestroyEntity(core::Entity entity)

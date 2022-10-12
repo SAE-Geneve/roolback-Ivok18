@@ -95,6 +95,12 @@ core::Entity GameManager::SpawnBoundary(core::Vec2f position)
     return entity;
 }
 
+void GameManager::SpawnBoundaries(float distanceFromCenter)
+{
+    SpawnBoundary(core::Vec2f(0, distanceFromCenter));
+    SpawnBoundary(core::Vec2f(0, -distanceFromCenter));
+}
+
 PlayerNumber GameManager::CheckWinner() const
 {
     int alivePlayer = 0;

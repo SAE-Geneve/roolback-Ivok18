@@ -39,18 +39,9 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 
             if (lastPlayerNumber_ == maxPlayerNmb)
             {
-                /*auto spawnBoundaryPacket = std::make_unique<SpawnBallPacket>();
-                spawnBoundaryPacket->packetType = PacketType::SPAWN_BALL;
-                core::LogDebug("[Server] Spawn new ball");
-                SendReliablePacket(std::move(spawnBallPacket));
-                */
-
-                auto spawnBoundaryPacket = std::make_unique<SpawnBoundaryPacket>();
-                spawnBoundaryPacket->packetType = PacketType::SPAWN_BOUNDARY;
-                core::LogDebug("[Server] Spawn game boundaries");
-                SendReliablePacket(std::move(spawnBoundaryPacket));
-
+                SpawnNewBoundaries();
                 SpawnNewBall();
+
                 auto startGamePacket = std::make_unique<StartGamePacket>();
                 startGamePacket->packetType = PacketType::START_GAME;
                 core::LogDebug("Send Start Game Packet");
