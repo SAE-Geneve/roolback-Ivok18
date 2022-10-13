@@ -157,9 +157,7 @@ void Client::ReceivePacket(const Packet* packet)
     }
     case PacketType::SPAWN_BOUNDARIES:
     {
-        float distanceFromSpawn = 4.3f;
-
-        gameManager_.SpawnBoundaries(distanceFromSpawn);
+        gameManager_.SpawnBoundaries();
         break;
     }
     default:;

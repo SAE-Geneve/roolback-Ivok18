@@ -95,10 +95,10 @@ core::Entity GameManager::SpawnBoundary(core::Vec2f position)
     return entity;
 }
 
-void GameManager::SpawnBoundaries(float distanceFromCenter)
+void GameManager::SpawnBoundaries()
 {
-    SpawnBoundary(core::Vec2f(0, distanceFromCenter));
-    SpawnBoundary(core::Vec2f(0, -distanceFromCenter));
+    SpawnBoundary(core::Vec2f(0, boundaryTop));
+    SpawnBoundary(core::Vec2f(0, boundaryBottom));
 }
 
 PlayerNumber GameManager::CheckWinner() const

@@ -28,13 +28,14 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
             static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
             continue;
         auto playerBody = physicsManager_.GetBody(playerEntity);
+        auto playerBox = physicsManager_.GetBox(playerEntity);
         auto playerCharacter = GetComponent(playerEntity);
         const auto input = playerCharacter.input;
 
         const bool right = input & PlayerInputEnum::PlayerInput::RIGHT;
         const bool left = input & PlayerInputEnum::PlayerInput::LEFT;
-        const bool up = input & PlayerInputEnum::PlayerInput::UP;
-        const bool down = input & PlayerInputEnum::PlayerInput::DOWN;
+        const bool up = (input & PlayerInputEnum::PlayerInput::UP) && playerBody.position.y + playerBox.extends.y < boundaryTop;
+        const bool down = (input & PlayerInputEnum::PlayerInput::DOWN) && playerBody.position.y - playerBox.extends.y > boundaryBottom;
         const auto angularVelocity = ((left ? -1.0f : 0.0f) + (right ? 1.0f : 0.0f)) * playerAngularSpeed;
 
         playerBody.angularVelocity = 0;
@@ -43,7 +44,8 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
         dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.asSeconds()));
 
         //const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
-        const auto velocity = ((down ? core::Vec2f(0, -playerSpeed) : core::Vec2f::zero() + (up ? core::Vec2f(0, playerSpeed) : core::Vec2f::zero())));
+        const auto velocity = ((down ? core::Vec2f(0, -playerSpeed) : core::Vec2f::zero() +
+									(up ? core::Vec2f(0, playerSpeed) : core::Vec2f::zero())));
 
         playerBody.velocity = velocity * dt.asSeconds();
 

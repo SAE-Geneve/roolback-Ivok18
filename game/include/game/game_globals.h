@@ -43,6 +43,8 @@ constexpr float ballSpeed = 2.0f;
 constexpr float ballScale = 0.75f;
 constexpr float boundaryScale = 1.5f;
 //constexpr float bulletPeriod = 3.0f;
+constexpr float boundaryTop = 4.3f;
+constexpr float boundaryBottom = -4.3f;
 constexpr float playerInvincibilityPeriod = 1.5f;
 constexpr float invincibilityFlashPeriod = 0.5f;
 
