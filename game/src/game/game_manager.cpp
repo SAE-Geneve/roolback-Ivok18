@@ -89,7 +89,6 @@ core::Entity GameManager::SpawnBoundary(core::Vec2f position)
 
     transformManager_.AddComponent(entity);
     transformManager_.SetPosition(entity, position);
-    transformManager_.SetScale(entity, core::Vec2f::one() * boundaryScale);
     transformManager_.SetRotation(entity, core::Degree(0.0f));
     rollbackManager_.SpawnBoundary(entity, position);
     return entity;

@@ -53,9 +53,9 @@ void PhysicsManager::FixedUpdate(sf::Time dt)
                 continue;
             const Body& body1 = bodyManager_.GetComponent(entity);
             const Box& box1 = boxManager_.GetComponent(entity);
-
             const Body& body2 = bodyManager_.GetComponent(otherEntity);
             const Box& box2 = boxManager_.GetComponent(otherEntity);
+
 
             if (Box2Box(
                 body1.position.x - box1.extends.x,

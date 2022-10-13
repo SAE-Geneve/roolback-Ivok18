@@ -288,9 +288,8 @@ void RollbackManager::SpawnPlayer(PlayerNumber playerNumber, core::Entity entity
     playerBody.position = position;
     playerBody.rotation = rotation;
     Box playerBox;
-    playerBox.extends.x = 0.10f;
-    playerBox.extends.y = 0.64f;
-
+    playerBox.extends.x = playerScaleX;
+    playerBox.extends.y = playerScaleY;
     PlayerCharacter playerCharacter;
     playerCharacter.playerNumber = playerNumber;
 
@@ -366,7 +365,7 @@ void RollbackManager::SpawnBall(core::Entity entity, core::Vec2f position, core:
     ballBody.position = position;
     ballBody.velocity = velocity;
     Box ballBox;
-    ballBox.extends = core::Vec2f::one() * ballScale * 0.5f;
+    ballBox.extends = core::Vec2f::one() * ballScale * 0.17f;
 
     currentBallManager_.AddComponent(entity);
     currentBallManager_.SetComponent(entity, { 0 });
@@ -397,7 +396,8 @@ void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
     boundaryBody.position = position;
     boundaryBody.velocity = core::Vec2f::zero();
     Box boundaryBox;
-    boundaryBox.extends = core::Vec2f::one() * boundaryScale;
+    boundaryBox.extends.x = boundaryScaleX;
+    boundaryBox.extends.y = boundaryScaleY;
 
     currentBoundaryManager_.AddComponent(entity);
     currentBoundaryManager_.SetComponent(entity, {position});
@@ -417,7 +417,6 @@ void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
 
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
-    currentTransformManager_.SetScale(entity, core::Vec2f::one() * boundaryScale);
 }
 
 void RollbackManager::DestroyEntity(core::Entity entity)

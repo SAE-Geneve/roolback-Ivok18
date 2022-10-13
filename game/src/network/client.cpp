@@ -149,8 +149,27 @@ void Client::ReceivePacket(const Packet* packet)
     }
     case PacketType::SPAWN_BALL:
     {
+        //pick random direction for the ball when game starts
         auto pos = core::Vec2f::zero();
-        auto velocity = core::Vec2f::zero();
+        auto randXDir = core::RandomRange(-1, 1);
+        core::Vec2f velocity;
+        if(randXDir <= 0)
+        {
+            velocity.x = -ballInitialSpeed;
+        }
+        else
+        {
+            velocity.x = ballInitialSpeed;
+        }
+    	auto randYDir = core::RandomRange(-1, 1);
+        if (randYDir <= 0)
+        {
+            velocity.y = -ballInitialSpeed;
+        }
+        else
+        {
+            velocity.y = ballInitialSpeed;
+        }
 
         gameManager_.SpawnBall(pos, velocity);
         break;
