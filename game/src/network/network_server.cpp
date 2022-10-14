@@ -6,6 +6,8 @@
 #include <fmt/format.h>
 #include <chrono>
 
+
+
 #ifdef TRACY_ENABLE
 #include <Tracy.hpp>
 #endif
@@ -217,8 +219,32 @@ void NetworkServer::SpawnNewPlayer([[maybe_unused]] ClientId clientId, [[maybe_u
 }
 void NetworkServer::SpawnNewBall()
 {
+	//pick random direction for the ball before notifiying clients
+    auto pos = core::Vec2f::zero();
+    auto randXDir = core::RandomRange(-1, 1);
+    core::Vec2f velocity;
+	if (randXDir <= 0)
+	{
+		velocity.x = -ballInitialSpeed;
+	}
+    else
+    {
+        velocity.x = ballInitialSpeed;
+    }
+    auto randYDir = core::RandomRange(-1, 1);
+    if (randYDir <= 0)
+    {
+        velocity.y = -ballInitialSpeed;
+    }
+    else
+    {
+        velocity.y = ballInitialSpeed;
+    }
+
     auto spawnBallPacket = std::make_unique<SpawnBallPacket>();
     spawnBallPacket->packetType = PacketType::SPAWN_BALL;
+    spawnBallPacket->velocity = core::ConvertToBinary(velocity);
+    spawnBallPacket->pos = core::ConvertToBinary(pos);
     core::LogDebug("[Server] Spawn new ball");
     SendReliablePacket(std::move(spawnBallPacket));
 }

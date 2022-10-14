@@ -153,17 +153,17 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnPlayerPacket& spawnPlayer
 struct SpawnBallPacket : TypedPacket<PacketType::SPAWN_BALL>
 {
     std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
-    std::array<std::uint8_t, sizeof(core::Degree)> angle{};
+    std::array<std::uint8_t, sizeof(core::Vec2f)> velocity{};
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBallPacket& spawnBallPacket)
 {
-    return packet << spawnBallPacket.pos << spawnBallPacket.angle;
+    return packet << spawnBallPacket.pos << spawnBallPacket.velocity;
 }
 
 inline sf::Packet& operator>>(sf::Packet& packet, SpawnBallPacket& spawnBallPacket)
 {
-    return packet >> spawnBallPacket.pos >> spawnBallPacket.angle;
+    return packet >> spawnBallPacket.pos >> spawnBallPacket.velocity;
 }
 
 /**

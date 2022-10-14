@@ -11,6 +11,7 @@
 #include "graphics/color.h"
 #include "maths/angle.h"
 #include "maths/vec2.h"
+#include "maths/basic.h"
 
 
 namespace game

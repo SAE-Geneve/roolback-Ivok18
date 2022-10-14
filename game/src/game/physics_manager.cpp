@@ -34,6 +34,7 @@ void PhysicsManager::FixedUpdate(sf::Time dt)
         if (!entityManager_.HasComponent(entity, static_cast<core::EntityMask>(core::ComponentType::BODY2D)))
             continue;
         auto body = bodyManager_.GetComponent(entity);
+        
         body.position += body.velocity * dt.asSeconds();
         body.rotation += body.angularVelocity * dt.asSeconds();
         bodyManager_.SetComponent(entity, body);
