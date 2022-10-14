@@ -154,7 +154,6 @@ void ClientGameManager::Begin()
     {
         core::LogError("Could not load boundary sprite");
     }
-
     //load fonts
     if (!font_.loadFromFile("data/fonts/8-bit-hud.ttf"))
     {
@@ -369,7 +368,7 @@ core::Entity ClientGameManager::SpawnBall(core::Vec2f position, core::Vec2f velo
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, ballTexture_);
     spriteManager_.SetOrigin(entity, sf::Vector2f(ballTexture_.getSize()) / 2.0f);
-    spriteManager_.SetColor(entity, core::Color::black());
+    spriteManager_.SetColor(entity, core::Color::transparent());
 
     return entity;
 }
@@ -386,8 +385,10 @@ core::Entity ClientGameManager::SpawnBoundary(core::Vec2f position)
     return entity;
 }
 
+
 void ClientGameManager::FixedUpdate()
 {
+   
 
 #ifdef TRACY_ENABLE
     ZoneScoped;
@@ -418,6 +419,20 @@ void ClientGameManager::FixedUpdate()
     if (state_ & FINISHED)
     {
         return;
+    }
+    if(state_ & STARTED)
+    {
+        if(ballVisibilityFlag_ == 0)
+        {
+            for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
+            {
+                if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::BALL)))
+                {
+                    spriteManager_.SetColor(entity, core::Color::black());
+                }
+            }
+            ballVisibilityFlag_++;
+        }
     }
 
     //We send the player inputs when the game started

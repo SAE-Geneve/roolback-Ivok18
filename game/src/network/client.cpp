@@ -163,7 +163,6 @@ void Client::ReceivePacket(const Packet* packet)
     }
     default:;
     }
-
 }
 
 void Client::Update(sf::Time dt)

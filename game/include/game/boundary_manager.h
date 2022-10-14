@@ -1,13 +1,11 @@
 #pragma once
 #include <SFML/System/Time.hpp>
-
-
 #include "game_globals.h"
 
 namespace game
 {
 /**
-* \brief Boundary is a struct that contains info about the boundary (when it will be destroyed)
+* \brief Boundary is a struct that contains info about the boundary 
 */
 struct Boundary
 {
@@ -16,8 +14,7 @@ struct Boundary
 class GameManager;
 
 /**
-* \brief BallManager is a ComponentManager that holds all the balls in one place.
-* It will automatically destroy the ball when remainingTime is over.
+* \brief BoundaryManager is a ComponentManager that holds all the boundaries in one place.
 */
 class BoundaryManager : public core::ComponentManager<Boundary, static_cast<core::EntityMask>(ComponentType::BOUNDARY)>
 {

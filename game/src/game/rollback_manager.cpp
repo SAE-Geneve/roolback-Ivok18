@@ -430,7 +430,7 @@ void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
     currentPhysicsManager_.SetBox(entity, boundaryBox);
 
     lastValidateBoundaryManager_.AddComponent(entity);
-    lastValidateBoundaryManager_.SetComponent(entity, { position });
+    lastValidateBoundaryManager_.SetComponent(entity, {position});
 
     lastValidatePhysicsManager_.AddBody(entity);
     lastValidatePhysicsManager_.SetBody(entity, boundaryBody);
@@ -440,6 +440,8 @@ void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
 }
+
+
 
 void RollbackManager::DestroyEntity(core::Entity entity)
 {

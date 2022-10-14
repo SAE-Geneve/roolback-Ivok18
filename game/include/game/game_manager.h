@@ -107,6 +107,7 @@ protected:
     float fixedTimer_ = 0.0f;
     unsigned long long startingTime_ = 0;
     std::uint32_t state_ = 0;
+    int ballVisibilityFlag_ = 0;
 
     sf::Texture playerLeftTexture_;
     sf::Texture playerRightTexture_;

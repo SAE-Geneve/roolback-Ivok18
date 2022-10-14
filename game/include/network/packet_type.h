@@ -167,7 +167,7 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnBallPacket& spawnBallPack
 }
 
 /**
- * \brief SpawnBoundaryPacket is a TCP packet sent to all clients to notify of the spawn of a new boundary
+ * \brief SpawnBoundariesPacket is a TCP packet sent to all clients to notify of the spawn of  arena boundaries (top and bottom)
  */
 struct SpawnBoundariesPacket : TypedPacket<PacketType::SPAWN_BOUNDARIES>
 {
