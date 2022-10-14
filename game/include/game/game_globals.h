@@ -43,6 +43,7 @@ constexpr float playerShootingPeriod = 0.3f;
 constexpr float playerScaleX = 0.1f;
 constexpr float playerScaleY = 0.64f;
 constexpr float ballInitialSpeed = 2.0f;
+constexpr float ballSpeedIncrease = 1.05f;
 constexpr float ballScale = 0.75f;
 constexpr float boundaryScaleX = 20.f;
 constexpr float boundaryScaleY = 0.025f;

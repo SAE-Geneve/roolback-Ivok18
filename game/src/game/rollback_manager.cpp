@@ -344,7 +344,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
         const auto& ballBody = currentPhysicsManager_.GetBody(entity2);
-        const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y);
+        const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
 
         currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
         //ManageCollision(player, entity1, ball, entity2);
@@ -353,7 +353,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
         const auto& ballBody = currentPhysicsManager_.GetBody(entity1);
-        const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y);
+        const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
 
         currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
         //ManageCollision(player, entity2, ball, entity1);
