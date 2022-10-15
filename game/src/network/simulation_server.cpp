@@ -136,8 +136,8 @@ void SimulationServer::SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumb
 void SimulationServer::SpawnNewBall()
 {
     //pick random direction for the ball before notifiying clients
-    auto pos = core::Vec2f::zero();
-    auto randXDir = core::RandomRange(-1, 1);
+    const auto pos = core::Vec2f::zero();
+    const auto randXDir = core::RandomRange(-1, 1);
     core::Vec2f velocity;
     if (randXDir <= 0)
     {
@@ -162,17 +162,34 @@ void SimulationServer::SpawnNewBall()
     spawnBallPacket->velocity = core::ConvertToBinary(velocity);
     spawnBallPacket->pos = core::ConvertToBinary(pos);
     core::LogDebug("[Server] Spawn new ball");
+    gameManager_.SpawnBall(pos,velocity),
     SendReliablePacket(std::move(spawnBallPacket));
 }
 
-void SimulationServer::SpawnNewBoundaries()
+void SimulationServer::SpawnNewBoundary(float yPositionFromCenter)
 {
-    auto spawnBoundariesPacket = std::make_unique<SpawnBoundariesPacket>();
-    spawnBoundariesPacket->packetType = PacketType::SPAWN_BOUNDARIES;
-    core::LogDebug("[Server] Spawn game boundaries");
-    SendReliablePacket(std::move(spawnBoundariesPacket));
+    const auto pos = core::Vec2f(0, yPositionFromCenter);
+
+    auto spawnBoundaryPacket = std::make_unique<SpawnBoundaryPacket>();
+    spawnBoundaryPacket->packetType = PacketType::SPAWN_BOUNDARY;
+    spawnBoundaryPacket->pos = core::ConvertToBinary(pos);
+
+    core::LogDebug("[Server] Spawn game boundary");
+    gameManager_.SpawnBoundary(pos);
+    SendReliablePacket(std::move(spawnBoundaryPacket));
 }
 
+void SimulationServer::SpawnNewHome(PlayerNumber playerNumberToSpawnHomeFor)
+{
+    const auto pos = (playerNumberToSpawnHomeFor == 0) ?
+        (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) - homeSpawnOffset:
+        (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) + homeSpawnOffset;
 
+    auto spawnHomePacket = std::make_unique<SpawnHomePacket>();
+    spawnHomePacket->packetType = PacketType::SPAWN_HOME;
+    spawnHomePacket->pos = core::ConvertToBinary(pos);
+    core::LogDebug("[Server] Spawn a player's home");
+    SendReliablePacket(std::move(spawnHomePacket));
+}
 
 }

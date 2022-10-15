@@ -70,7 +70,8 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
         {
             if (input & PlayerInputEnum::PlayerInput::SHOOT)
             {
-                const auto currentPlayerSpeed = playerBody.velocity.GetMagnitude();
+                const auto current
+                = playerBody.velocity.GetMagnitude();
                 const auto bulletVelocity = dir *
                     ((core::Vec2f::Dot(playerBody.velocity, dir) > 0.0f ? currentPlayerSpeed : 0.0f)
                         + ballSpeed);

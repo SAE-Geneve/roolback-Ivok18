@@ -17,7 +17,8 @@ enum class PacketType : std::uint8_t
     SPAWN_PLAYER,
     INPUT,
     SPAWN_BALL,
-    SPAWN_BOUNDARIES,
+    SPAWN_BOUNDARY,
+    SPAWN_HOME,
     VALIDATE_STATE,
     START_GAME,
     JOIN_ACK,
@@ -167,22 +168,41 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnBallPacket& spawnBallPack
 }
 
 /**
- * \brief SpawnBoundariesPacket is a TCP packet sent to all clients to notify of the spawn of  arena boundaries (top and bottom)
+ * \brief SpawnBoundaryPacket is a TCP packet sent to all clients to notify of the spawn of an arena boundary (top or bottom)
  */
-struct SpawnBoundariesPacket : TypedPacket<PacketType::SPAWN_BOUNDARIES>
+struct SpawnBoundaryPacket : TypedPacket<PacketType::SPAWN_BOUNDARY>
 {
 	std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
 };
 
-inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBoundariesPacket& spawnBoundariesPacket)
+inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBoundaryPacket& spawnBoundaryPacket)
 {
-    return packet << spawnBoundariesPacket.pos;
+    return packet << spawnBoundaryPacket.pos;
 }
 
-inline sf::Packet& operator>>(sf::Packet& packet, SpawnBoundariesPacket& spawnBoundariesPacket)
+inline sf::Packet& operator>>(sf::Packet& packet, SpawnBoundaryPacket& spawnBoundaryPacket)
 {
    
-    return packet >> spawnBoundariesPacket.pos;
+    return packet >> spawnBoundaryPacket.pos;
+}
+
+/**
+ * \brief SpawnHomePacket is a TCP packet sent to all clients to notify of the spawn of a player home (left side or right side)
+ */
+struct SpawnHomePacket : TypedPacket<PacketType::SPAWN_HOME>
+{
+    std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const SpawnHomePacket& spawnHomePacket)
+{
+    return packet << spawnHomePacket.pos;
+}
+
+
+inline sf::Packet& operator>>(sf::Packet& packet, SpawnHomePacket& spawnHomePacket)
+{
+    return packet >> spawnHomePacket.pos;
 }
 
 /**
@@ -294,9 +314,15 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
         packet << packetTmp;
         break;
     }
-    case PacketType::SPAWN_BOUNDARIES:
+    case PacketType::SPAWN_BOUNDARY:
     {
-        const auto& packetTmp = static_cast<SpawnBoundariesPacket&>(sendingPacket);
+        const auto& packetTmp = static_cast<SpawnBoundaryPacket&>(sendingPacket);
+        packet << packetTmp;
+        break;
+    }
+    case PacketType::SPAWN_HOME:
+    {
+        const auto & packetTmp = static_cast<SpawnHomePacket&>(sendingPacket);
         packet << packetTmp;
         break;
     }
@@ -367,13 +393,20 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
         packet >> *spawnBallPacket;
         return spawnBallPacket;
     }
-    case PacketType::SPAWN_BOUNDARIES:
+    case PacketType::SPAWN_BOUNDARY:
     {
-        auto spawnBoundariesPacket = std::make_unique<SpawnBoundariesPacket>();
-        spawnBoundariesPacket->packetType = packetTmp.packetType;
-        packet >> *spawnBoundariesPacket;
-        return spawnBoundariesPacket;
+        auto spawnBoundaryPacket = std::make_unique<SpawnBoundaryPacket>();
+        spawnBoundaryPacket->packetType = packetTmp.packetType;
+        packet >> *spawnBoundaryPacket;
+        return spawnBoundaryPacket;
     }
+    case PacketType::SPAWN_HOME:
+	{
+        auto spawnHomePacket = std::make_unique<SpawnHomePacket>();
+        spawnHomePacket->packetType = packetTmp.packetType;
+        packet >> *spawnHomePacket;
+        return spawnHomePacket;
+	}
     case PacketType::INPUT:
     {
         auto playerInputPacket = std::make_unique<PlayerInputPacket>();

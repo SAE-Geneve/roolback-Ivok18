@@ -156,9 +156,21 @@ void Client::ReceivePacket(const Packet* packet)
         gameManager_.SpawnBall(pos, velocity);
         break;
     }
-    case PacketType::SPAWN_BOUNDARIES:
+    case PacketType::SPAWN_BOUNDARY:
     {
-        gameManager_.SpawnBoundaries();
+        const auto* spawnBoundaryPacket = static_cast<const SpawnBoundaryPacket*>(packet);
+        const auto pos = core::ConvertFromBinary<core::Vec2f>(spawnBoundaryPacket->pos);
+
+        gameManager_.SpawnBoundary(pos);
+        break;
+    }
+    case PacketType::SPAWN_HOME:
+    {
+        const auto* spawnHomePacket = static_cast<const SpawnHomePacket*>(packet);
+        const auto pos = core::ConvertFromBinary<core::Vec2f>(spawnHomePacket->pos);
+
+        core::LogDebug("Spawn Home");
+        //gameManager_.SpawnHome(pos);
         break;
     }
     default:;

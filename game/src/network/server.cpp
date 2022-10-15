@@ -34,16 +34,21 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
             core::LogDebug("Managing Received Packet Join from: " + std::to_string(static_cast<unsigned>(clientId)));
             clientMap_[lastPlayerNumber_] = clientId;
 
+            
             SpawnNewPlayer(clientId, lastPlayerNumber_);
-            //SpawnNewHome();
-
             lastPlayerNumber_++;
 
             if (lastPlayerNumber_ == maxPlayerNmb)
             {
-                SpawnNewBoundaries();
+                SpawnNewBoundary(boundaryTop);
+                SpawnNewBoundary(boundaryBottom);
+                for (PlayerNumber p = 0; p < maxPlayerNmb;p++)
+                {
+                    SpawnNewHome(p);
+                }
+
                 SpawnNewBall();
-                
+
                 auto startGamePacket = std::make_unique<StartGamePacket>();
                 startGamePacket->packetType = PacketType::START_GAME;
                 core::LogDebug("Send Start Game Packet");

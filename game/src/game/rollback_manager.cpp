@@ -17,10 +17,13 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
     currentPhysicsManager_(entityManager), currentPlayerManager_(entityManager, currentPhysicsManager_, gameManager_),
     currentBallManager_(entityManager, gameManager),
     currentBoundaryManager_(entityManager, gameManager),
+    currentHomeManager_(entityManager, gameManager),
     lastValidatePhysicsManager_(entityManager),
     lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_),
 	lastValidateBallManager_(entityManager, gameManager),
-    lastValidateBoundaryManager_(entityManager, gameManager)
+    lastValidateBoundaryManager_(entityManager, gameManager),
+    lastValidateHomeManager_(entityManager, gameManager)
+
 {
     for (auto& input : inputs_)
     {
@@ -60,6 +63,7 @@ void RollbackManager::SimulateToCurrentFrame()
     currentPhysicsManager_.CopyAllComponents(lastValidatePhysicsManager_);
     currentPlayerManager_.CopyAllComponents(lastValidatePlayerManager_.GetAllComponents());
     currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
+    
 
     for (Frame frame = lastValidateFrame + 1; frame <= currentFrame; frame++)
     {
@@ -215,7 +219,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
     lastValidateBallManager_.CopyAllComponents(currentBallManager_.GetAllComponents());
     lastValidatePlayerManager_.CopyAllComponents(currentPlayerManager_.GetAllComponents());
     lastValidatePhysicsManager_.CopyAllComponents(currentPhysicsManager_);
-    currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
+    lastValidateBoundaryManager_.CopyAllComponents(currentBoundaryManager_.GetAllComponents());
     lastValidateFrame_ = newValidateFrame;
     createdEntities_.clear();
 }
@@ -355,7 +359,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         const auto& ballBody = currentPhysicsManager_.GetBody(entity1);
         const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
 
-        currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
+        currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithPlayer));
         //ManageCollision(player, entity2, ball, entity1);
     }
     if(entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BOUNDARY)) &&
@@ -374,8 +378,6 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         const auto velocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
 
         currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithBoundary));
-
-      
     }
 }
 
@@ -415,8 +417,10 @@ void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
     createdEntities_.push_back({ entity, testedFrame_ });
 
     Body boundaryBody;
-    boundaryBody.position = position;
-    boundaryBody.velocity = core::Vec2f::zero();
+    boundaryBody.position = position.y > 0.f ?
+        core::Vec2f(position.x, position.y + boundaryScaleY):
+        core::Vec2f(position.x, position.y - boundaryScaleY);
+   
     Box boundaryBox;
     boundaryBox.extends.x = boundaryScaleX;
     boundaryBox.extends.y = boundaryScaleY;
@@ -440,6 +444,38 @@ void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
 }
+
+void RollbackManager::SpawnHome(core::Entity entity, core::Vec2f position)
+{
+    createdEntities_.push_back({ entity, testedFrame_ });
+
+    Body homeBody;
+    homeBody.position = position;
+    homeBody.velocity = core::Vec2f::zero();
+    Box homeBox;
+    homeBox.extends.x = homeScaleX;
+    homeBox.extends.y = homeScaleY;
+
+    //currentHomeManager_.AddComponent(entity);
+    //currentHomeManager_.SetComponent(entity, { position });
+
+    currentPhysicsManager_.AddBody(entity);
+    currentPhysicsManager_.SetBody(entity, homeBody);
+    currentPhysicsManager_.AddBox(entity);
+    currentPhysicsManager_.SetBox(entity, homeBox);
+
+    //lastValidateHomeManager_.AddComponent(entity);
+    //lastValidateHomeManager_.SetComponent(entity, { position });
+
+    lastValidatePhysicsManager_.AddBody(entity);
+    lastValidatePhysicsManager_.SetBody(entity, homeBody);
+    lastValidatePhysicsManager_.AddBox(entity);
+    lastValidatePhysicsManager_.SetBox(entity, homeBox);
+
+    currentTransformManager_.AddComponent(entity);
+    currentTransformManager_.SetPosition(entity, position);
+}
+
 
 
 

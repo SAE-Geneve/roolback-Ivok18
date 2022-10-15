@@ -37,22 +37,22 @@ using Frame = std::uint32_t;
  */
 constexpr std::uint32_t maxPlayerNmb = 2;
 constexpr short playerHealth = 5;
-constexpr float playerSpeed = 150.0f;
+constexpr float playerSpeed = 200.0f;
 constexpr core::Degree playerAngularSpeed = core::Degree(90.0f);
 constexpr float playerShootingPeriod = 0.3f;
 constexpr float playerScaleX = 0.1f;
 constexpr float playerScaleY = 0.64f;
 constexpr float ballInitialSpeed = 3.3f;
-constexpr float ballSpeedIncrease = 1.2f;
+constexpr float ballSpeedIncrease = 1.1f;
 constexpr float ballScale = 0.75f;
-constexpr float boundaryScaleX = 20.f;
-constexpr float boundaryScaleY = 0.025f;
-constexpr float homeSpawnOffset = 0.25f;
+constexpr float boundaryScaleX = 500.f;
+constexpr float boundaryScaleY = 500.f; //O.O25f
+constexpr core::Vec2f homeSpawnOffset = core::Vec2f(0.25f, 0);
 constexpr float homeScaleX = 0.05f;
 constexpr float homeScaleY = 20.f;
 //constexpr float bulletPeriod = 3.0f;
-constexpr float boundaryTop = 4.3f; //position from center
-constexpr float boundaryBottom = -4.3f; //position from center
+constexpr float boundaryTop = 4.3f; //y position from center
+constexpr float boundaryBottom = -4.3f; //y position from center
 constexpr float playerInvincibilityPeriod = 1.5f;
 constexpr float invincibilityFlashPeriod = 0.5f;
 
@@ -107,6 +107,7 @@ enum class ComponentType : core::EntityMask
     PLAYER_INPUT = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 3u,
     DESTROYED = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 4u,
     BOUNDARY = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 5u,
+    HOME = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 6u
 };
 
 /**

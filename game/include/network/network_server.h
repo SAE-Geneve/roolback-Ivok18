@@ -48,7 +48,8 @@ public:
 protected:
     void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) override;
     void SpawnNewBall() override;
-    void SpawnNewBoundaries() override;
+    void SpawnNewBoundary(float yPositionFromCenter) override;
+    void SpawnNewHome(PlayerNumber lastPlayerNumber) override;
 
 private:
     void ProcessReceivePacket(std::unique_ptr<Packet> packet,

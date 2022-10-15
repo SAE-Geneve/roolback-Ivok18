@@ -86,18 +86,21 @@ void GameManager::DestroyBall(core::Entity entity)
 core::Entity GameManager::SpawnBoundary(core::Vec2f position)
 {
     const core::Entity entity = entityManager_.CreateEntity();
-
+   
     transformManager_.AddComponent(entity);
     transformManager_.SetPosition(entity, position);
-    transformManager_.SetRotation(entity, core::Degree(0.0f));
     rollbackManager_.SpawnBoundary(entity, position);
     return entity;
 }
 
-void GameManager::SpawnBoundaries()
+core::Entity GameManager::SpawnHome(core::Vec2f position)
 {
-    SpawnBoundary(core::Vec2f(0, boundaryTop));
-    SpawnBoundary(core::Vec2f(0, boundaryBottom));
+    const core::Entity entity = entityManager_.CreateEntity();
+
+    transformManager_.AddComponent(entity);
+    transformManager_.SetPosition(entity, position);
+    //rollbackManager_.SpawnHome(entity, position);
+    return entity;
 }
 
 PlayerNumber GameManager::CheckWinner() const
@@ -153,6 +156,11 @@ void ClientGameManager::Begin()
     if(!boundaryTexture_.loadFromFile("data/sprites/boundary.png"))
     {
         core::LogError("Could not load boundary sprite");
+    }
+    if (!homeTexture_.loadFromFile("data/sprites/home.png"))
+    {
+        core::LogError("Could not load home sprite");
+            ;
     }
     //load fonts
     if (!font_.loadFromFile("data/fonts/8-bit-hud.ttf"))
@@ -347,6 +355,7 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f posit
 
     GameManager::SpawnPlayer(playerNumber, position, rotation);
     const auto entity = GetEntityFromPlayerNumber(playerNumber);
+
     spriteManager_.AddComponent(entity);
     if(playerNumber == 0)
     {
@@ -382,6 +391,17 @@ core::Entity ClientGameManager::SpawnBoundary(core::Vec2f position)
     spriteManager_.SetOrigin(entity, sf::Vector2f(boundaryTexture_.getSize()) / 2.0f);
     spriteManager_.SetColor(entity, core::Color::black());
 
+    return entity;
+}
+
+core::Entity ClientGameManager::SpawnHome(core::Vec2f position)
+{
+    const auto entity = GameManager::SpawnHome(position);
+
+    spriteManager_.AddComponent(entity);
+    spriteManager_.SetTexture(entity, homeTexture_);
+    spriteManager_.SetOrigin(entity, sf::Vector2f(homeTexture_.getSize()) / 2.0f);
+    spriteManager_.SetColor(entity, core::Color::yellow());
     return entity;
 }
 

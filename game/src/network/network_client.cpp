@@ -110,7 +110,6 @@ void NetworkClient::Update(sf::Time dt)
             break;
         }
     }
-
     gameManager_.Update(dt);
 }
 
