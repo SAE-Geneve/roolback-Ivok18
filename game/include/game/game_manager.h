@@ -32,7 +32,7 @@ public:
     virtual core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity);
     virtual void DestroyBall(core::Entity entity);
     virtual core::Entity SpawnBoundary(core::Vec2f position);
-    virtual core::Entity SpawnHome(core::Vec2f position);
+    virtual core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position);
     [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
     [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
     [[nodiscard]] Frame GetLastValidateFrame() const { return rollbackManager_.GetLastValidateFrame(); }
@@ -86,7 +86,7 @@ public:
     void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation) override;
     core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity) override;
     core::Entity SpawnBoundary(core::Vec2f position) override;
-    core::Entity SpawnHome(core::Vec2f position) override;
+    core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position) override;
     void FixedUpdate();
     void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame) override;
     void DrawImGui() override;

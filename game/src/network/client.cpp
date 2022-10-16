@@ -167,10 +167,10 @@ void Client::ReceivePacket(const Packet* packet)
     case PacketType::SPAWN_HOME:
     {
         const auto* spawnHomePacket = static_cast<const SpawnHomePacket*>(packet);
+        const PlayerNumber playerNumber = spawnHomePacket->playerNumber;
         const auto pos = core::ConvertFromBinary<core::Vec2f>(spawnHomePacket->pos);
-
         core::LogDebug("Spawn Home");
-        //gameManager_.SpawnHome(pos);
+        gameManager_.SpawnHome(playerNumber, pos);
         break;
     }
     default:;

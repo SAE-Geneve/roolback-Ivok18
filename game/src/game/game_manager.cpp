@@ -93,13 +93,13 @@ core::Entity GameManager::SpawnBoundary(core::Vec2f position)
     return entity;
 }
 
-core::Entity GameManager::SpawnHome(core::Vec2f position)
+core::Entity GameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f position)
 {
     const core::Entity entity = entityManager_.CreateEntity();
 
     transformManager_.AddComponent(entity);
-    transformManager_.SetPosition(entity, position);
-    //rollbackManager_.SpawnHome(entity, position);
+    transformManager_.SetPosition(entity, {position});
+    rollbackManager_.SpawnHome(entity, position);
     return entity;
 }
 
@@ -173,7 +173,6 @@ void ClientGameManager::Begin()
 
 void ClientGameManager::Update(sf::Time dt)
 {
-
 #ifdef TRACY_ENABLE
     ZoneScoped;
 #endif
@@ -394,14 +393,14 @@ core::Entity ClientGameManager::SpawnBoundary(core::Vec2f position)
     return entity;
 }
 
-core::Entity ClientGameManager::SpawnHome(core::Vec2f position)
+core::Entity ClientGameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f position)
 {
-    const auto entity = GameManager::SpawnHome(position);
+    const auto entity = GameManager::SpawnHome(playerNumber, position);
 
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, homeTexture_);
     spriteManager_.SetOrigin(entity, sf::Vector2f(homeTexture_.getSize()) / 2.0f);
-    spriteManager_.SetColor(entity, core::Color::yellow());
+    spriteManager_.SetColor(entity, playerColors[playerNumber]);
     return entity;
 }
 

@@ -34,7 +34,8 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 
 void RollbackManager::SimulateToCurrentFrame()
 {
-
+    core::LogDebug(std::to_string(timeSinceLastCollision_.getElapsedTime().asMicroseconds()));
+    
 #ifdef TRACY_ENABLE
     ZoneScoped;
 #endif
@@ -63,6 +64,7 @@ void RollbackManager::SimulateToCurrentFrame()
     currentPhysicsManager_.CopyAllComponents(lastValidatePhysicsManager_);
     currentPlayerManager_.CopyAllComponents(lastValidatePlayerManager_.GetAllComponents());
     currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
+    currentHomeManager_.CopyAllComponents(lastValidateHomeManager_.GetAllComponents());
     
 
     for (Frame frame = lastValidateFrame + 1; frame <= currentFrame; frame++)
@@ -87,6 +89,7 @@ void RollbackManager::SimulateToCurrentFrame()
         currentPlayerManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPhysicsManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentBoundaryManager_.FixedUpdate(sf::seconds(fixedPeriod));
+        currentHomeManager_.FixedUpdate(sf::seconds(fixedPeriod));
     }
     //Copy the physics states to the transforms
     for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
@@ -100,6 +103,7 @@ void RollbackManager::SimulateToCurrentFrame()
         currentTransformManager_.SetRotation(entity, body.rotation);
     }
 }
+
 void RollbackManager::SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, Frame inputFrame)
 {
     //Should only be called on the server
@@ -188,6 +192,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
     currentPhysicsManager_.CopyAllComponents(lastValidatePhysicsManager_);
     currentPlayerManager_.CopyAllComponents(lastValidatePlayerManager_.GetAllComponents());
     currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
+    currentHomeManager_.CopyAllComponents(lastValidateHomeManager_.GetAllComponents());
 
     //We simulate the frames until the new validated frame
     for (Frame frame = lastValidateFrame_ + 1; frame <= newValidateFrame; frame++)
@@ -206,6 +211,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
         currentBallManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPlayerManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPhysicsManager_.FixedUpdate(sf::seconds(fixedPeriod));
+        currentHomeManager_.FixedUpdate(sf::seconds(fixedPeriod));
     }
     //Definitely remove DESTROY entities
     for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
@@ -220,9 +226,11 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
     lastValidatePlayerManager_.CopyAllComponents(currentPlayerManager_.GetAllComponents());
     lastValidatePhysicsManager_.CopyAllComponents(currentPhysicsManager_);
     lastValidateBoundaryManager_.CopyAllComponents(currentBoundaryManager_.GetAllComponents());
+    lastValidateHomeManager_.CopyAllComponents(currentHomeManager_.GetAllComponents());
     lastValidateFrame_ = newValidateFrame;
     createdEntities_.clear();
 }
+
 void RollbackManager::ConfirmFrame(Frame newValidateFrame, const std::array<PhysicsState, maxPlayerNmb>& serverPhysicsState)
 {
 
@@ -244,6 +252,7 @@ void RollbackManager::ConfirmFrame(Frame newValidateFrame, const std::array<Phys
         }
     }
 }
+
 PhysicsState RollbackManager::GetValidatePhysicsState(PlayerNumber playerNumber) const
 {
     PhysicsState state = 0;
@@ -284,7 +293,6 @@ PhysicsState RollbackManager::GetValidatePhysicsState(PlayerNumber playerNumber)
 
 void RollbackManager::SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation)
 {
-
 #ifdef TRACY_ENABLE
     ZoneScoped;
 #endif
@@ -456,16 +464,16 @@ void RollbackManager::SpawnHome(core::Entity entity, core::Vec2f position)
     homeBox.extends.x = homeScaleX;
     homeBox.extends.y = homeScaleY;
 
-    //currentHomeManager_.AddComponent(entity);
-    //currentHomeManager_.SetComponent(entity, { position });
+    currentHomeManager_.AddComponent(entity);
+    currentHomeManager_.SetComponent(entity, { position });
 
     currentPhysicsManager_.AddBody(entity);
     currentPhysicsManager_.SetBody(entity, homeBody);
     currentPhysicsManager_.AddBox(entity);
     currentPhysicsManager_.SetBox(entity, homeBox);
 
-    //lastValidateHomeManager_.AddComponent(entity);
-    //lastValidateHomeManager_.SetComponent(entity, { position });
+    lastValidateHomeManager_.AddComponent(entity);
+    lastValidateHomeManager_.SetComponent(entity, { position });
 
     lastValidatePhysicsManager_.AddBody(entity);
     lastValidatePhysicsManager_.SetBody(entity, homeBody);

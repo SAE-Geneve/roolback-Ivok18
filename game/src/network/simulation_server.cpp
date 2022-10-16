@@ -182,12 +182,13 @@ void SimulationServer::SpawnNewBoundary(float yPositionFromCenter)
 void SimulationServer::SpawnNewHome(PlayerNumber playerNumberToSpawnHomeFor)
 {
     const auto pos = (playerNumberToSpawnHomeFor == 0) ?
-        (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) - homeSpawnOffset:
+        (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) - homeSpawnOffset :
         (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) + homeSpawnOffset;
 
     auto spawnHomePacket = std::make_unique<SpawnHomePacket>();
     spawnHomePacket->packetType = PacketType::SPAWN_HOME;
     spawnHomePacket->pos = core::ConvertToBinary(pos);
+    spawnHomePacket->playerNumber = playerNumberToSpawnHomeFor;
     core::LogDebug("[Server] Spawn a player's home");
     SendReliablePacket(std::move(spawnHomePacket));
 }

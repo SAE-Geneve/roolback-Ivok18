@@ -262,7 +262,6 @@ void NetworkServer::SpawnNewBoundary(float yPositionFromCenter)
 
 void NetworkServer::SpawnNewHome(PlayerNumber playerNumberToSpawnHomeFor)
 {
-   
     const auto pos = (playerNumberToSpawnHomeFor == 0) ?
         (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) - homeSpawnOffset :
         (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) + homeSpawnOffset;
@@ -270,6 +269,7 @@ void NetworkServer::SpawnNewHome(PlayerNumber playerNumberToSpawnHomeFor)
     auto spawnHomePacket = std::make_unique<SpawnHomePacket>();
     spawnHomePacket->packetType = PacketType::SPAWN_HOME;
     spawnHomePacket->pos = core::ConvertToBinary(pos);
+    spawnHomePacket->playerNumber = playerNumberToSpawnHomeFor;
     core::LogDebug("[Server] Spawn a player's home");
     SendReliablePacket(std::move(spawnHomePacket));
 }

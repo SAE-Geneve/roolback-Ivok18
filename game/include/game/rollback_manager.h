@@ -8,7 +8,7 @@
 #include "network/packet_type.h"
 #include "boundary_manager.h"
 #include "home_manager.h"
-
+#include "SFML/System/Clock.hpp"
 
 
 namespace game
@@ -127,5 +127,11 @@ private:
      * to destroy them when rollbacking.
      */
     std::vector<CreatedEntity> createdEntities_;
+    /**
+     * \brief clock that keeps track of the time since last collision between the ball and a player.
+     * When game starts, value is 0. It resets when the ball collides with one of the player.
+     * This variable is used to prevent bugs were the ball gets stuck inside a player
+     */
+    sf::Clock timeSinceLastCollision_;
 };
 }

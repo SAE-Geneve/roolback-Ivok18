@@ -191,18 +191,20 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnBoundaryPacket& spawnBoun
  */
 struct SpawnHomePacket : TypedPacket<PacketType::SPAWN_HOME>
 {
+    PlayerNumber playerNumber = INVALID_PLAYER;
     std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
+    
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const SpawnHomePacket& spawnHomePacket)
 {
-    return packet << spawnHomePacket.pos;
+    return packet << spawnHomePacket.playerNumber << spawnHomePacket.pos;
 }
 
 
 inline sf::Packet& operator>>(sf::Packet& packet, SpawnHomePacket& spawnHomePacket)
 {
-    return packet >> spawnHomePacket.pos;
+    return packet >> spawnHomePacket.playerNumber >> spawnHomePacket.pos;
 }
 
 /**
