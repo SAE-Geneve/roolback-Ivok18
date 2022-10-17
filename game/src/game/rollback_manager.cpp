@@ -34,7 +34,7 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
 
 void RollbackManager::SimulateToCurrentFrame()
 {
-    core::LogDebug(std::to_string(timeSinceLastCollision_.getElapsedTime().asMicroseconds()));
+    
     
 #ifdef TRACY_ENABLE
     ZoneScoped;
@@ -351,23 +351,45 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
             }
             currentPlayerManager_.SetComponent(playerEntity, playerCharacter);*/
         }
-    };
+    }
     if (entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
         const auto& ballBody = currentPhysicsManager_.GetBody(entity2);
-        const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
-
-        currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
+        const auto& playerBody = currentPhysicsManager_.GetBody(entity1);
+        const auto isPlayerLeft = playerBody.position.x < 0 ? true : false;
+        const auto isPlayerRight = playerBody.position.x > 0 ? true : false;
+        core::Vec2f velocityAfterCollisionWithPlayer;
+        if(ballBody.velocity.x < 0 && isPlayerLeft)
+        {
+            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
+        }
+        else if(ballBody.velocity.x > 0 && isPlayerRight)
+        {
+            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
+        }
         //ManageCollision(player, entity1, ball, entity2);
     }
     if (entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)) &&
         entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
         const auto& ballBody = currentPhysicsManager_.GetBody(entity1);
-        const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
-
-        currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithPlayer));
+        const auto& playerBody = currentPhysicsManager_.GetBody(entity2);
+        const auto isPlayerLeft = playerBody.position.x < 0 ? true : false;
+        const auto isPlayerRight = playerBody.position.x > 0 ? true : false;
+        core::Vec2f velocityAfterCollisionWithPlayer;
+        if (ballBody.velocity.x < 0 && isPlayerLeft)
+        {
+            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithPlayer));
+        }
+        else if (ballBody.velocity.x > 0 && isPlayerRight)
+        {
+            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithPlayer));
+        }
         //ManageCollision(player, entity2, ball, entity1);
     }
     if(entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BOUNDARY)) &&
@@ -377,7 +399,6 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         const auto velocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
 
         currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithBoundary));
-       
     }
     if (entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BOUNDARY)) &&
         entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BALL)))
