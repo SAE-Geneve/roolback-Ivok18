@@ -9,6 +9,7 @@ namespace game
 */
 struct Home
 {
+	PlayerNumber playerNumber;
 	core::Vec2f position;
 };
 class GameManager;

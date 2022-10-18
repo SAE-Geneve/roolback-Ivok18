@@ -135,28 +135,14 @@ void SimulationServer::SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumb
 
 void SimulationServer::SpawnNewBall()
 {
-    //pick random direction for the ball before notifiying clients
+    //pick random direction for the ball before notifying clients
     const auto pos = core::Vec2f::zero();
     const auto randXDir = core::RandomRange(-1, 1);
-    core::Vec2f velocity;
-    if (randXDir <= 0)
-    {
-        velocity.x = -ballInitialSpeed;
-    }
-    else
-    {
-        velocity.x = ballInitialSpeed;
-    }
-    auto randYDir = core::RandomRange(-1, 1);
-    if (randYDir <= 0)
-    {
-        velocity.y = -ballInitialSpeed;
-    }
-    else
-    {
-        velocity.y = ballInitialSpeed;
-    }
-
+    const auto randYDir = core::RandomRange(-1, 1);
+    const auto velX = randXDir <= 0 ? -ballInitialSpeed : ballInitialSpeed;
+    const auto velY = randYDir <= 0 ? -ballInitialSpeed : ballInitialSpeed;
+    const auto velocity = core::Vec2f(velX, velY);
+    
     auto spawnBallPacket = std::make_unique<SpawnBallPacket>();
     spawnBallPacket->packetType = PacketType::SPAWN_BALL;
     spawnBallPacket->velocity = core::ConvertToBinary(velocity);

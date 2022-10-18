@@ -42,8 +42,10 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
             {
                 SpawnNewBoundary(boundaryTop);
                 SpawnNewBoundary(boundaryBottom);
-                SpawnNewHome(0);
-                SpawnNewHome(1);
+                for(PlayerNumber p = 0; p < maxPlayerNmb; p++)
+                {
+                    SpawnNewHome(p);
+                }
                 SpawnNewBall();
 
                 auto startGamePacket = std::make_unique<StartGamePacket>();

@@ -5,6 +5,7 @@
 
 namespace game
 {
+
 /**
  * \brief Ball is a struct that contains info about the ball (when it will be destroyed)
  */
@@ -13,6 +14,7 @@ struct Ball
     float remainingTime = 0.0f;
     PlayerNumber playerNumber = INVALID_PLAYER;
 };
+
 
 class GameManager;
 

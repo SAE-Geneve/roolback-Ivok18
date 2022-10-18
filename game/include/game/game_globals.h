@@ -48,13 +48,13 @@ constexpr float ballScale = 0.75f;
 constexpr float boundaryScaleX = 500.f;
 constexpr float boundaryScaleY = 500.f; //O.O25f
 constexpr core::Vec2f homeSpawnOffset = core::Vec2f(0.5f, 0);
-constexpr float homeScaleX = 0.05f;
-constexpr float homeScaleY = 20.f;
+constexpr float homeScaleX = 500.f; //0.05f;
+constexpr float homeScaleY = 4.25f;
 //constexpr float bulletPeriod = 3.0f;
 constexpr float boundaryTop = 4.3f; //y position from center
 constexpr float boundaryBottom = -4.3f; //y position from center
-constexpr float playerInvincibilityPeriod = 1.5f;
-constexpr float invincibilityFlashPeriod = 0.5f;
+constexpr float playerHurtPeriod = 1.25f;
+constexpr float playeHurtFlashPeriod = 0.25f;
 
 /**
  * \brief windowBufferSize is the size of input stored by a client. 5 seconds of frame at 50 fps

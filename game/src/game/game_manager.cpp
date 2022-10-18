@@ -99,7 +99,7 @@ core::Entity GameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f posit
 
     transformManager_.AddComponent(entity);
     transformManager_.SetPosition(entity, {position});
-    rollbackManager_.SpawnHome(entity, position);
+    rollbackManager_.SpawnHome(entity, playerNumber, position);
     return entity;
 }
 
@@ -187,18 +187,18 @@ void ClientGameManager::Update(sf::Time dt)
                 static_cast<core::EntityMask>(core::ComponentType::SPRITE)))
             {
                 const auto& player = rollbackManager_.GetPlayerCharacterManager().GetComponent(entity);
-                /*
+                
                 if (player.invincibilityTime > 0.0f)
                 {
-                    //auto leftV = std::fmod(player.invincibilityTime, invincibilityFlashPeriod);
-                    //auto rightV = invincibilityFlashPeriod / 2.0f;
-                    //core::LogDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.invincibilityTime));
+                      auto leftV = std::fmod(player.invincibilityTime, playeHurtFlashPeriod);
+                      auto rightV = playeHurtFlashPeriod / 2.0f;
+                      core::LogDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.invincibilityTime));
                 }
-                */
+                
                 if (player.invincibilityTime > 0.0f &&
-                    std::fmod(player.invincibilityTime, invincibilityFlashPeriod) > invincibilityFlashPeriod / 2.0f)
+                    std::fmod(player.invincibilityTime, playeHurtFlashPeriod) > playeHurtFlashPeriod / 2.0f)
                 {
-                    spriteManager_.SetColor(entity, sf::Color::Black);
+                    spriteManager_.SetColor(entity, sf::Color::Transparent);
                 }
                 else
                 {

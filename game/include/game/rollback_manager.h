@@ -70,7 +70,7 @@ public:
     void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
     void SpawnBall(core::Entity entity, core::Vec2f position, core::Vec2f velocity);
     void SpawnBoundary(core::Entity entity, core::Vec2f position);
-    void SpawnHome(core::Entity entity, core::Vec2f position);
+    void SpawnHome(core::Entity entity, PlayerNumber playerNumber, core::Vec2f position);
     /**
      * \brief DestroyEntity is a method that does not destroy the entity definitely, but puts the DESTROY flag on.
      * An entity is truly destroyed when the destroy frame is validated.

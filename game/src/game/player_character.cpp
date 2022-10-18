@@ -51,12 +51,12 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
 
         physicsManager_.SetBody(playerEntity, playerBody);
 
-        /*if (playerCharacter.invincibilityTime > 0.0f)
+        if (playerCharacter.invincibilityTime > 0.0f)
         {
             playerCharacter.invincibilityTime -= dt.asSeconds();
             SetComponent(playerEntity, playerCharacter);
         }
-        */
+        
 
         //Check if playerCharacter cannot shoot, and increase shootingTime
         /*if (playerCharacter.shootingTime < playerShootingPeriod)

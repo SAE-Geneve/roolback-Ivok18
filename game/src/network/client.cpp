@@ -152,7 +152,7 @@ void Client::ReceivePacket(const Packet* packet)
         const auto* spawnBallPacket = static_cast<const SpawnBallPacket*>(packet);
         const auto pos = core::ConvertFromBinary<core::Vec2f>(spawnBallPacket->pos);
         const auto velocity = core::ConvertFromBinary<core::Vec2f>(spawnBallPacket->velocity);
-
+        
         gameManager_.SpawnBall(pos, velocity);
         break;
     }

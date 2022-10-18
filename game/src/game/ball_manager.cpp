@@ -25,14 +25,15 @@ void BallManager::FixedUpdate(sf::Time dt)
         }
         /*if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::BALL)))
         {
-            auto& bullet = components_[entity];
+
+            const auto& bullet = components_[entity];
             bullet.remainingTime -= dt.asSeconds();
             if (bullet.remainingTime < 0.0f)
             {
                 gameManager_.DestroyBall(entity);
             }
-        }
-        */
+        }*/
+        
     }
 }
 }
