@@ -40,14 +40,13 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
 
             if (lastPlayerNumber_ == maxPlayerNmb)
             {
-                SpawnNewBoundary(boundaryTop);
-                SpawnNewBoundary(boundaryBottom);
+                SpawnNewBoundary(topBoundaryPos);
+                SpawnNewBoundary(bottomBoundaryPos);
                 for(PlayerNumber p = 0; p < maxPlayerNmb; p++)
                 {
                     SpawnNewHome(p);
                 }
                 SpawnNewBall();
-
                 auto startGamePacket = std::make_unique<StartGamePacket>();
                 startGamePacket->packetType = PacketType::START_GAME;
                 core::LogDebug("Send Start Game Packet");

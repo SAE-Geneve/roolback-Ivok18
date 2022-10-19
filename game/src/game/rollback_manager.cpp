@@ -366,7 +366,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         //in either case the ball will go in it's "x-axis" opposite direction
         if ((isBallGoingLeft && isPlayerLeft) || (isBallGoingRight && isPlayerRight))
         {
-            const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
             currentPhysicsManager_.SetBody(ballEntity, Body(ballBody.position, velocityAfterCollisionWithPlayer));
         }
     };
@@ -405,12 +405,12 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         core::Vec2f velocityAfterCollisionWithPlayer;
         if(ballBody.velocity.x < 0 && isPlayerLeft)
         {
-            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
             currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
         }
         else if(ballBody.velocity.x > 0 && isPlayerRight)
         {
-            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
             currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
         }*/
         //ManageCollision(player, entity1, ball, entity2);
@@ -426,12 +426,12 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         core::Vec2f velocityAfterCollisionWithPlayer;
         if (ballBody.velocity.x < 0 && isPlayerLeft)
         {
-            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
             currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithPlayer));
         }
         else if (ballBody.velocity.x > 0 && isPlayerRight)
         {
-            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballSpeedIncrease;
+            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
             currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithPlayer));
         }*/
         //ManageCollision(player, entity2, ball, entity1);
@@ -501,7 +501,9 @@ void RollbackManager::SpawnBoundary(core::Entity entity, core::Vec2f position)
     createdEntities_.push_back({ entity, testedFrame_ });
 
     Body boundaryBody;
-    boundaryBody.position = position.y > 0.f ?
+    boundaryBody.bodyType = BodyType::STATIC;
+    const auto isTopBoundary = position.y > 0.f;
+    boundaryBody.position = isTopBoundary ?
         core::Vec2f(position.x, position.y + boundaryScaleY):
         core::Vec2f(position.x, position.y - boundaryScaleY);
     Box boundaryBox;
@@ -533,7 +535,9 @@ void RollbackManager::SpawnHome(core::Entity entity, PlayerNumber playerNumber, 
     createdEntities_.push_back({ entity, testedFrame_ });
 
     Body homeBody;
-    homeBody.position = position.x < 0.f ?
+    homeBody.bodyType = BodyType::STATIC;
+    const auto isLeftHome = position.x < 0.f;
+    homeBody.position = isLeftHome ?
         core::Vec2f(position.x - homeScaleX, position.y) :
         core::Vec2f(position.x + homeScaleX, position.y);
     homeBody.velocity = core::Vec2f::zero();
@@ -561,8 +565,52 @@ void RollbackManager::SpawnHome(core::Entity entity, PlayerNumber playerNumber, 
     currentTransformManager_.SetPosition(entity, position);
 }
 
+void RollbackManager::SpawnVizualizer(core::Entity entity, core::Vec2f position, ComponentType componentType)
+{
+    createdEntities_.push_back({ entity, testedFrame_ });
 
+    Body vizualizerBody;
+    vizualizerBody.bodyType = BodyType::STATIC;
+    vizualizerBody.position = position;
+    Box vizualizerBox;
+    vizualizerBox.extends.x = -0.1f;
+    vizualizerBox.extends.y = -0.1f;
 
+    switch (componentType)
+    {
+	    case ComponentType::BOUNDARY:
+	    {
+	        currentBoundaryManager_.AddComponent(entity);
+	        currentBoundaryManager_.SetComponent(entity, { position });
+	        lastValidateBoundaryManager_.AddComponent(entity);
+	        lastValidateBoundaryManager_.SetComponent(entity, { position });
+	        break;
+	    }
+	    case ComponentType::HOME:
+	    {
+	        currentHomeManager_.AddComponent(entity);
+	        currentHomeManager_.SetComponent(entity, { PlayerNumber(), position});
+	        lastValidateHomeManager_.AddComponent(entity);
+	        lastValidateHomeManager_.SetComponent(entity, { PlayerNumber(), position });
+	        break;
+	    }
+        default:
+            break;
+    }
+
+    currentPhysicsManager_.AddBody(entity);
+    currentPhysicsManager_.SetBody(entity, vizualizerBody);
+    currentPhysicsManager_.AddBox(entity);
+    currentPhysicsManager_.SetBox(entity, vizualizerBox);
+
+    lastValidatePhysicsManager_.AddBody(entity);
+    lastValidatePhysicsManager_.SetBody(entity, vizualizerBody);
+    lastValidatePhysicsManager_.AddBox(entity);
+    lastValidatePhysicsManager_.SetBox(entity, vizualizerBox);
+
+    currentTransformManager_.AddComponent(entity);
+    currentTransformManager_.SetPosition(entity, position);
+}
 
 void RollbackManager::DestroyEntity(core::Entity entity)
 {

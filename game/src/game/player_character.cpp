@@ -34,8 +34,8 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
 
         const bool right = input & PlayerInputEnum::PlayerInput::RIGHT;
         const bool left = input & PlayerInputEnum::PlayerInput::LEFT;
-        const bool up = (input & PlayerInputEnum::PlayerInput::UP) && playerBody.position.y + playerBox.extends.y < boundaryTop;
-        const bool down = (input & PlayerInputEnum::PlayerInput::DOWN) && playerBody.position.y - playerBox.extends.y > boundaryBottom;
+        const bool up = (input & PlayerInputEnum::PlayerInput::UP) && playerBody.position.y + playerBox.extends.y < topBoundaryPos.y;
+        const bool down = (input & PlayerInputEnum::PlayerInput::DOWN) && playerBody.position.y - playerBox.extends.y > bottomBoundaryPos.y;
         const auto angularVelocity = ((left ? -1.0f : 0.0f) + (right ? 1.0f : 0.0f)) * playerAngularSpeed;
 
         playerBody.angularVelocity = 0;

@@ -35,6 +35,27 @@ using Frame = std::uint32_t;
 /**
  * \brief mmaxPlayerNmb is a integer constant that defines the maximum number of player per game
  */
+
+/**
+ * brief boundaries global info
+ */
+constexpr core::Vec2f topBoundaryPos(0.f, 4.3f);
+constexpr core::Vec2f bottomBoundaryPos(0.f, -4.3f);
+constexpr float boundaryScaleX = 1000.f;
+constexpr float boundaryScaleY = 1000.f; //O.O25f
+
+/**
+* brief homes global data 
+*/
+constexpr core::Vec2f leftHomePos(-9.5f, 0.f);
+constexpr core::Vec2f rightHomePos(9.5f, 0.f);
+constexpr float homeScaleX = 500.f; //0.05f;
+constexpr float homeScaleY = 4.25f;
+//constexpr core::Vec2f homeSpawnOffset = core::Vec2f(0.5f, 0);
+
+/**
+* brief players global data 
+*/
 constexpr std::uint32_t maxPlayerNmb = 2;
 constexpr short playerHealth = 5;
 constexpr float playerSpeed = 200.0f;
@@ -42,19 +63,16 @@ constexpr core::Degree playerAngularSpeed = core::Degree(90.0f);
 constexpr float playerShootingPeriod = 0.3f;
 constexpr float playerScaleX = 0.1f;
 constexpr float playerScaleY = 0.64f;
-constexpr float ballInitialSpeed = 2.3f;
-constexpr float ballSpeedIncrease = 1.1f;
-constexpr float ballScale = 0.75f;
-constexpr float boundaryScaleX = 500.f;
-constexpr float boundaryScaleY = 500.f; //O.O25f
-constexpr core::Vec2f homeSpawnOffset = core::Vec2f(0.5f, 0);
-constexpr float homeScaleX = 500.f; //0.05f;
-constexpr float homeScaleY = 4.25f;
-//constexpr float bulletPeriod = 3.0f;
-constexpr float boundaryTop = 4.3f; //y position from center
-constexpr float boundaryBottom = -4.3f; //y position from center
 constexpr float playerHurtPeriod = 1.25f;
 constexpr float playeHurtFlashPeriod = 0.25f;
+
+/**
+* brief ball global data 
+*/
+constexpr float ballInitialSpeed = 2.5f;
+constexpr float ballRatioSpeedIncrease = 1.15f;
+constexpr float ballScale = 0.75f;
+//constexpr float bulletPeriod = 3.0f;
 
 /**
  * \brief windowBufferSize is the size of input stored by a client. 5 seconds of frame at 50 fps

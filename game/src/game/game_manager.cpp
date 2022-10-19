@@ -86,7 +86,7 @@ void GameManager::DestroyBall(core::Entity entity)
 core::Entity GameManager::SpawnBoundary(core::Vec2f position)
 {
     const core::Entity entity = entityManager_.CreateEntity();
-   
+
     transformManager_.AddComponent(entity);
     transformManager_.SetPosition(entity, position);
     rollbackManager_.SpawnBoundary(entity, position);
@@ -100,6 +100,17 @@ core::Entity GameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f posit
     transformManager_.AddComponent(entity);
     transformManager_.SetPosition(entity, {position});
     rollbackManager_.SpawnHome(entity, playerNumber, position);
+    return entity;
+}
+
+core::Entity GameManager::SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color, ComponentType componentType)
+{
+    const core::Entity entity = entityManager_.CreateEntity();
+
+    transformManager_.AddComponent(entity);
+    transformManager_.SetPosition(entity, position);
+    rollbackManager_.SpawnVizualizer(entity, position, componentType);
+    
     return entity;
 }
 
@@ -253,7 +264,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
     UpdateCameraView();
     target.setView(originalView_);
 
-    //starBackground_.Draw(target);
+    starBackground_.Draw(target);
     spriteManager_.Draw(target);
 
     if(drawPhysics_)
@@ -385,6 +396,10 @@ core::Entity ClientGameManager::SpawnBoundary(core::Vec2f position)
 {
     const auto entity = GameManager::SpawnBoundary(position);
 
+    //spawn vizualizer
+    auto vizualizer = GameManager::SpawnVizualizer(position, boundaryTexture_, core::Color::black(), ComponentType::BOUNDARY);
+    SpawnVizualizer(vizualizer, position, boundaryTexture_, core::Color::black());
+
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, boundaryTexture_);
     spriteManager_.SetOrigin(entity, sf::Vector2f(boundaryTexture_.getSize()) / 2.0f);
@@ -397,11 +412,23 @@ core::Entity ClientGameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f
 {
     const auto entity = GameManager::SpawnHome(playerNumber, position);
 
+    //spawn vizualizer
+    auto vizualizer = GameManager::SpawnVizualizer(position, homeTexture_, playerColors[playerNumber], ComponentType::HOME);
+    SpawnVizualizer(vizualizer, position, homeTexture_, playerColors[playerNumber]);
+
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, homeTexture_);
     spriteManager_.SetOrigin(entity, sf::Vector2f(homeTexture_.getSize()) / 2.0f);
     spriteManager_.SetColor(entity, playerColors[playerNumber]);
     return entity;
+}
+
+void ClientGameManager::SpawnVizualizer(core::Entity& vizualizer, core::Vec2f position, sf::Texture& texture, sf::Color color)
+{
+    spriteManager_.AddComponent(vizualizer);
+    spriteManager_.SetTexture(vizualizer, texture);
+    spriteManager_.SetOrigin(vizualizer, sf::Vector2f(texture.getSize()) / 2.0f);
+    spriteManager_.SetColor(vizualizer, color);
 }
 
 

@@ -48,7 +48,7 @@ public:
 protected:
     void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) override;
     void SpawnNewBall() override;
-    void SpawnNewBoundary(float yPositionFromCenter) override;
+    void SpawnNewBoundary(core::Vec2f pos) override;
     void SpawnNewHome(PlayerNumber lastPlayerNumber) override;
 
 private:

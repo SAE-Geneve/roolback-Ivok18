@@ -43,7 +43,6 @@ void Client::ReceivePacket(const Packet* packet)
         const auto startingTime = (duration_cast<duration<long long, std::milli>>(
             system_clock::now().time_since_epoch()
             ) + milliseconds(startDelay)).count() - milliseconds(static_cast<long long>(currentPing_)).count();
-
         gameManager_.StartGame(startingTime);
         break;
     }

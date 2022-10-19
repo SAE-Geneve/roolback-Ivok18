@@ -152,10 +152,8 @@ void SimulationServer::SpawnNewBall()
     SendReliablePacket(std::move(spawnBallPacket));
 }
 
-void SimulationServer::SpawnNewBoundary(float yPositionFromCenter)
+void SimulationServer::SpawnNewBoundary(core::Vec2f pos)
 {
-    const auto pos = core::Vec2f(0, yPositionFromCenter);
-
     auto spawnBoundaryPacket = std::make_unique<SpawnBoundaryPacket>();
     spawnBoundaryPacket->packetType = PacketType::SPAWN_BOUNDARY;
     spawnBoundaryPacket->pos = core::ConvertToBinary(pos);
@@ -167,10 +165,8 @@ void SimulationServer::SpawnNewBoundary(float yPositionFromCenter)
 
 void SimulationServer::SpawnNewHome(PlayerNumber playerNumberToSpawnHomeFor)
 {
-    const auto pos = (playerNumberToSpawnHomeFor == 0) ?
-        (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) - homeSpawnOffset :
-        (spawnPositions[playerNumberToSpawnHomeFor] * 3.f) + homeSpawnOffset;
-
+    const auto pos = (playerNumberToSpawnHomeFor == 0) ? leftHomePos : rightHomePos;
+      
     auto spawnHomePacket = std::make_unique<SpawnHomePacket>();
     spawnHomePacket->packetType = PacketType::SPAWN_HOME;
     spawnHomePacket->pos = core::ConvertToBinary(pos);

@@ -33,6 +33,7 @@ public:
     virtual void DestroyBall(core::Entity entity);
     virtual core::Entity SpawnBoundary(core::Vec2f position);
     virtual core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position);
+    virtual core::Entity SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color, ComponentType componentType);
     [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
     [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
     [[nodiscard]] Frame GetLastValidateFrame() const { return rollbackManager_.GetLastValidateFrame(); }
@@ -87,6 +88,7 @@ public:
     core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity) override;
     core::Entity SpawnBoundary(core::Vec2f position) override;
     core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position) override;
+    void SpawnVizualizer(core::Entity& entity, core::Vec2f position, sf::Texture& texture, sf::Color color);
     void FixedUpdate();
     void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame) override;
     void DrawImGui() override;
@@ -109,6 +111,7 @@ protected:
     unsigned long long startingTime_ = 0;
     std::uint32_t state_ = 0;
     int ballVisibilityFlag_ = 0;
+    
 
     sf::Texture playerLeftTexture_;
     sf::Texture playerRightTexture_;
