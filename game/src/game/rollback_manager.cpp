@@ -343,11 +343,11 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
             //gameManager_.DestroyBall(ballEntity);
             //lower health point
             /*auto playerCharacter = currentPlayerManager_.GetComponent(playerEntity);
-            if (playerCharacter.invincibilityTime <= 0.0f)
+            if (playerCharacter.hurtTime <= 0.0f)
             {
                 core::LogDebug(fmt::format("Player {} is hit by ball", playerCharacter.playerNumber));
                 --playerCharacter.health;
-                playerCharacter.invincibilityTime = playerHurtPeriod;
+                playerCharacter.hurtTime = playerHurtPeriod;
             }
             currentPlayerManager_.SetComponent(playerEntity, playerCharacter);*/
         }
@@ -387,8 +387,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         const auto& damagedPlayerEntity = gameManager_.GetEntityFromPlayerNumber(home.playerNumber);
         auto& damagedPlayerCharacter = currentPlayerManager_.GetComponent(damagedPlayerEntity);
         --damagedPlayerCharacter.health;
-        damagedPlayerCharacter.invincibilityTime = playerHurtPeriod;
-
+        damagedPlayerCharacter.hurtTime = playerHurtPeriod;
 
         gameManager_.DestroyBall(ballEntity);
         currentPlayerManager_.SetComponent(damagedPlayerEntity, damagedPlayerCharacter);
@@ -565,48 +564,9 @@ void RollbackManager::SpawnHome(core::Entity entity, PlayerNumber playerNumber, 
     currentTransformManager_.SetPosition(entity, position);
 }
 
-void RollbackManager::SpawnVizualizer(core::Entity entity, core::Vec2f position, ComponentType componentType)
+void RollbackManager::SpawnVizualizer(core::Entity entity, core::Vec2f position)
 {
     createdEntities_.push_back({ entity, testedFrame_ });
-
-    Body vizualizerBody;
-    vizualizerBody.bodyType = BodyType::STATIC;
-    vizualizerBody.position = position;
-    Box vizualizerBox;
-    vizualizerBox.extends.x = -0.1f;
-    vizualizerBox.extends.y = -0.1f;
-
-    switch (componentType)
-    {
-	    case ComponentType::BOUNDARY:
-	    {
-	        currentBoundaryManager_.AddComponent(entity);
-	        currentBoundaryManager_.SetComponent(entity, { position });
-	        lastValidateBoundaryManager_.AddComponent(entity);
-	        lastValidateBoundaryManager_.SetComponent(entity, { position });
-	        break;
-	    }
-	    case ComponentType::HOME:
-	    {
-	        currentHomeManager_.AddComponent(entity);
-	        currentHomeManager_.SetComponent(entity, { PlayerNumber(), position});
-	        lastValidateHomeManager_.AddComponent(entity);
-	        lastValidateHomeManager_.SetComponent(entity, { PlayerNumber(), position });
-	        break;
-	    }
-        default:
-            break;
-    }
-
-    currentPhysicsManager_.AddBody(entity);
-    currentPhysicsManager_.SetBody(entity, vizualizerBody);
-    currentPhysicsManager_.AddBox(entity);
-    currentPhysicsManager_.SetBox(entity, vizualizerBox);
-
-    lastValidatePhysicsManager_.AddBody(entity);
-    lastValidatePhysicsManager_.SetBody(entity, vizualizerBody);
-    lastValidatePhysicsManager_.AddBox(entity);
-    lastValidatePhysicsManager_.SetBox(entity, vizualizerBox);
 
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);

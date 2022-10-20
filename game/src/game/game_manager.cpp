@@ -103,13 +103,13 @@ core::Entity GameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f posit
     return entity;
 }
 
-core::Entity GameManager::SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color, ComponentType componentType)
+core::Entity GameManager::SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color)
 {
     const core::Entity entity = entityManager_.CreateEntity();
 
     transformManager_.AddComponent(entity);
     transformManager_.SetPosition(entity, position);
-    rollbackManager_.SpawnVizualizer(entity, position, componentType);
+    rollbackManager_.SpawnVizualizer(entity, position);
     
     return entity;
 }
@@ -199,15 +199,15 @@ void ClientGameManager::Update(sf::Time dt)
             {
                 const auto& player = rollbackManager_.GetPlayerCharacterManager().GetComponent(entity);
                 
-                if (player.invincibilityTime > 0.0f)
+                if (player.hurtTime > 0.0f)
                 {
-                      auto leftV = std::fmod(player.invincibilityTime, playeHurtFlashPeriod);
+                      auto leftV = std::fmod(player.hurtTime, playeHurtFlashPeriod);
                       auto rightV = playeHurtFlashPeriod / 2.0f;
-                      core::LogDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.invincibilityTime));
+                      core::LogDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.hurtTime));
                 }
                 
-                if (player.invincibilityTime > 0.0f &&
-                    std::fmod(player.invincibilityTime, playeHurtFlashPeriod) > playeHurtFlashPeriod / 2.0f)
+                if (player.hurtTime > 0.0f &&
+                    std::fmod(player.hurtTime, playeHurtFlashPeriod) > playeHurtFlashPeriod / 2.0f)
                 {
                     spriteManager_.SetColor(entity, sf::Color::Transparent);
                 }
@@ -396,9 +396,8 @@ core::Entity ClientGameManager::SpawnBoundary(core::Vec2f position)
 {
     const auto entity = GameManager::SpawnBoundary(position);
 
-    //spawn vizualizer
-    auto vizualizer = GameManager::SpawnVizualizer(position, boundaryTexture_, core::Color::black(), ComponentType::BOUNDARY);
-    SpawnVizualizer(vizualizer, position, boundaryTexture_, core::Color::black());
+    auto vizualizer = GameManager::SpawnVizualizer(position, boundaryTexture_, core::Color::black());
+    SpawnVizualizer(vizualizer, boundaryTexture_, core::Color::black());
 
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, boundaryTexture_);
@@ -412,9 +411,8 @@ core::Entity ClientGameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f
 {
     const auto entity = GameManager::SpawnHome(playerNumber, position);
 
-    //spawn vizualizer
-    auto vizualizer = GameManager::SpawnVizualizer(position, homeTexture_, playerColors[playerNumber], ComponentType::HOME);
-    SpawnVizualizer(vizualizer, position, homeTexture_, playerColors[playerNumber]);
+    auto vizualizer = GameManager::SpawnVizualizer(position, homeTexture_, playerColors[playerNumber]);
+    SpawnVizualizer(vizualizer, homeTexture_, playerColors[playerNumber]);
 
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, homeTexture_);
@@ -423,7 +421,7 @@ core::Entity ClientGameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f
     return entity;
 }
 
-void ClientGameManager::SpawnVizualizer(core::Entity& vizualizer, core::Vec2f position, sf::Texture& texture, sf::Color color)
+void ClientGameManager::SpawnVizualizer(core::Entity& vizualizer, sf::Texture& texture, sf::Color color)
 {
     spriteManager_.AddComponent(vizualizer);
     spriteManager_.SetTexture(vizualizer, texture);

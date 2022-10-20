@@ -41,17 +41,16 @@ using Frame = std::uint32_t;
  */
 constexpr core::Vec2f topBoundaryPos(0.f, 4.3f);
 constexpr core::Vec2f bottomBoundaryPos(0.f, -4.3f);
-constexpr float boundaryScaleX = 1000.f;
-constexpr float boundaryScaleY = 1000.f; //O.O25f
+constexpr float boundaryScaleX = 1000.f; //box scale, not transform scale
+constexpr float boundaryScaleY = 1000.f; //box scale, not transform scale //O.O25f
 
 /**
 * brief homes global data 
 */
 constexpr core::Vec2f leftHomePos(-9.5f, 0.f);
 constexpr core::Vec2f rightHomePos(9.5f, 0.f);
-constexpr float homeScaleX = 500.f; //0.05f;
-constexpr float homeScaleY = 4.25f;
-//constexpr core::Vec2f homeSpawnOffset = core::Vec2f(0.5f, 0);
+constexpr float homeScaleX = 500.f; //box scale, not transform scale  //0.05f;
+constexpr float homeScaleY = 4.25f; //box scale, not transform scale
 
 /**
 * brief players global data 
@@ -61,9 +60,9 @@ constexpr short playerHealth = 5;
 constexpr float playerSpeed = 200.0f;
 constexpr core::Degree playerAngularSpeed = core::Degree(90.0f);
 constexpr float playerShootingPeriod = 0.3f;
-constexpr float playerScaleX = 0.1f;
-constexpr float playerScaleY = 0.64f;
-constexpr float playerHurtPeriod = 1.25f;
+constexpr float playerScaleX = 0.1f; //box scale, not transform scale
+constexpr float playerScaleY = 0.64f; //box scale, not transform scale
+constexpr float playerHurtPeriod = 1.25f; 
 constexpr float playeHurtFlashPeriod = 0.25f;
 
 /**
@@ -71,7 +70,7 @@ constexpr float playeHurtFlashPeriod = 0.25f;
 */
 constexpr float ballInitialSpeed = 2.5f;
 constexpr float ballRatioSpeedIncrease = 1.15f;
-constexpr float ballScale = 0.75f;
+constexpr float ballScale = 0.75f; //transform scale only
 //constexpr float bulletPeriod = 3.0f;
 
 /**

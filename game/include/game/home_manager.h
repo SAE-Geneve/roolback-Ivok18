@@ -9,7 +9,7 @@ namespace game
 */
 struct Home
 {
-	PlayerNumber playerNumber;
+	PlayerNumber playerNumber = INVALID_PLAYER;
 	core::Vec2f position;
 };
 class GameManager;

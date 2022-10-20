@@ -16,7 +16,7 @@ struct PlayerCharacter
     PlayerInput input = 0u;
     PlayerNumber playerNumber = INVALID_PLAYER;
     short health = playerHealth;
-    float invincibilityTime = 0.0f;
+    float hurtTime = 0.0f;
 };
 class GameManager;
 
