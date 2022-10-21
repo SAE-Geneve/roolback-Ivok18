@@ -172,6 +172,16 @@ void Client::ReceivePacket(const Packet* packet)
         gameManager_.SpawnHome(playerNumber, pos);
         break;
     }
+    case PacketType::SPAWN_HEALTHBAR:
+    {
+		const auto* spawnHealthbarPacket = static_cast<const SpawnHealthBarPacket*>(packet);
+        const PlayerNumber playerNumber = spawnHealthbarPacket->playerNumber;
+        const auto pos = core::ConvertFromBinary<core::Vec2f>(spawnHealthbarPacket->pos);
+        core::LogDebug("Spawn Healthbar");
+        gameManager_.SpawnHealthBar(pos);
+        gameManager_.SpawnHealthBarBackground(playerNumber, pos);
+        break;
+    }
     default:;
     }
 }

@@ -40,6 +40,7 @@ private:
 	void SpawnNewBall() override;
 	void SpawnNewBoundary(core::Vec2f pos) override;
 	void SpawnNewHome(PlayerNumber playerNumberToSpawnHomeFor) override;
+	void SpawnNewHealthbar(PlayerNumber playerNumberToSpawnHealthbarFor) override;
 
 	std::vector<DelayPacket> receivedPackets_;
 	std::vector<DelayPacket> sentPackets_;

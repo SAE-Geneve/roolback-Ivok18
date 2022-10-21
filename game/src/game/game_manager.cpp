@@ -98,8 +98,28 @@ core::Entity GameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f posit
     const core::Entity entity = entityManager_.CreateEntity();
 
     transformManager_.AddComponent(entity);
-    transformManager_.SetPosition(entity, {position});
+    transformManager_.SetPosition(entity, position);
     rollbackManager_.SpawnHome(entity, playerNumber, position);
+    return entity;
+}
+
+core::Entity GameManager::SpawnHealthBar(core::Vec2f position)
+{
+    const core::Entity entity = entityManager_.CreateEntity();
+
+    transformManager_.AddComponent(entity);
+    transformManager_.SetPosition(entity, position);
+    rollbackManager_.SpawnHealthBar(entity, position);
+    return entity;
+}
+
+core::Entity GameManager::SpawnHealthBarBackground(PlayerNumber playerNumber, core::Vec2f position)
+{
+    const core::Entity entity = entityManager_.CreateEntity();
+
+    transformManager_.AddComponent(entity);
+    transformManager_.SetPosition(entity, position);
+    rollbackManager_.SpawnHealthBarBackground(entity, playerNumber, position);
     return entity;
 }
 
@@ -171,7 +191,14 @@ void ClientGameManager::Begin()
     if (!homeTexture_.loadFromFile("data/sprites/home.png"))
     {
         core::LogError("Could not load home sprite");
-            ;
+    }
+    if(!healthbarTexture_.loadFromFile("data/sprites/healthbar.png"))
+    {
+        core::LogError("Could not load healthbar sprite");
+    }
+    if (!healthbarBackgroundTexture_.loadFromFile("data/sprites/healthbarBackground.png"))
+    {
+        core::LogError("Could not load healthbar background sprite");
     }
     //load fonts
     if (!font_.loadFromFile("data/fonts/8-bit-hud.ttf"))
@@ -420,6 +447,29 @@ core::Entity ClientGameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f
     spriteManager_.SetColor(entity, playerColors[playerNumber]);
     return entity;
 }
+
+core::Entity ClientGameManager::SpawnHealthBar(core::Vec2f position)
+{
+    const auto entity = GameManager::SpawnHealthBar(position);
+
+    spriteManager_.AddComponent(entity);
+    spriteManager_.SetTexture(entity, healthbarTexture_);
+    spriteManager_.SetOrigin(entity, sf::Vector2f(0, healthbarTexture_.getSize().y / 2.0f));
+    return entity;
+}
+
+core::Entity ClientGameManager::SpawnHealthBarBackground(PlayerNumber playerNumber, core::Vec2f position)
+{
+    const auto entity = GameManager::SpawnHealthBarBackground(playerNumber, position);
+
+    spriteManager_.AddComponent(entity);
+    spriteManager_.SetTexture(entity, healthbarBackgroundTexture_);
+    spriteManager_.SetOrigin(entity, sf::Vector2f(0, healthbarBackgroundTexture_.getSize().y / 2.0f));
+    spriteManager_.SetColor(entity, playerColors[playerNumber]);
+
+    return entity;
+}
+
 
 void ClientGameManager::SpawnVizualizer(core::Entity& vizualizer, sf::Texture& texture, sf::Color color)
 {

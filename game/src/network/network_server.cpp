@@ -245,20 +245,30 @@ void NetworkServer::SpawnNewBoundary(core::Vec2f pos)
     SendReliablePacket(std::move(spawnBoundaryPacket));
 }
 
-void NetworkServer::SpawnNewHome(PlayerNumber playerNumberToSpawnHomeFor)
+void NetworkServer::SpawnNewHome(PlayerNumber playerNumber)
 {
-    const auto pos = (playerNumberToSpawnHomeFor == 0) ? leftHomePos : rightHomePos;
-    
+    const auto pos = (playerNumber == 0) ? leftHomePos : rightHomePos;
 
     auto spawnHomePacket = std::make_unique<SpawnHomePacket>();
     spawnHomePacket->packetType = PacketType::SPAWN_HOME;
     spawnHomePacket->pos = core::ConvertToBinary(pos);
-    spawnHomePacket->playerNumber = playerNumberToSpawnHomeFor;
+    spawnHomePacket->playerNumber = playerNumber;
     core::LogDebug("[Server] Spawn a player's home");
     SendReliablePacket(std::move(spawnHomePacket));
 }
 
- 
+void NetworkServer::SpawnNewHealthbar(PlayerNumber playerNumber)
+{
+    const auto pos = (playerNumber == 0) ? leftHealthbarPos : rightHealthbarPos;
+
+    auto spawnHealthbarPacket = std::make_unique<SpawnHealthBarPacket>();
+    spawnHealthbarPacket->packetType = PacketType::SPAWN_HEALTHBAR;
+    spawnHealthbarPacket->pos = core::ConvertToBinary(pos);
+    spawnHealthbarPacket->playerNumber = playerNumber;
+    core::LogDebug("[Server] Spawn a player healthbar");
+    SendReliablePacket(std::move(spawnHealthbarPacket));
+}
+
 void NetworkServer::ProcessReceivePacket(
     std::unique_ptr<Packet> packet,
     PacketSocketSource packetSource,

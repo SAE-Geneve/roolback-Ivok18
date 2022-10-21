@@ -18,11 +18,13 @@ RollbackManager::RollbackManager(GameManager& gameManager, core::EntityManager& 
     currentBallManager_(entityManager, gameManager),
     currentBoundaryManager_(entityManager, gameManager),
     currentHomeManager_(entityManager, gameManager),
+    currentHealthBarManager(entityManager, gameManager),
     lastValidatePhysicsManager_(entityManager),
     lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_),
 	lastValidateBallManager_(entityManager, gameManager),
     lastValidateBoundaryManager_(entityManager, gameManager),
-    lastValidateHomeManager_(entityManager, gameManager)
+    lastValidateHomeManager_(entityManager, gameManager),
+    lastValidateHealthBarManager_(entityManager, gameManager)
 
 {
     for (auto& input : inputs_)
@@ -65,6 +67,7 @@ void RollbackManager::SimulateToCurrentFrame()
     currentPlayerManager_.CopyAllComponents(lastValidatePlayerManager_.GetAllComponents());
     currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
     currentHomeManager_.CopyAllComponents(lastValidateHomeManager_.GetAllComponents());
+    currentHealthBarManager.CopyAllComponents(lastValidateHealthBarManager_.GetAllComponents());
     
 
     for (Frame frame = lastValidateFrame + 1; frame <= currentFrame; frame++)
@@ -90,6 +93,7 @@ void RollbackManager::SimulateToCurrentFrame()
         currentPhysicsManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentBoundaryManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentHomeManager_.FixedUpdate(sf::seconds(fixedPeriod));
+        currentHealthBarManager.FixedUpdate(sf::seconds(fixedPeriod));
     }
     //Copy the physics states to the transforms
     for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
@@ -193,6 +197,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
     currentPlayerManager_.CopyAllComponents(lastValidatePlayerManager_.GetAllComponents());
     currentBoundaryManager_.CopyAllComponents(lastValidateBoundaryManager_.GetAllComponents());
     currentHomeManager_.CopyAllComponents(lastValidateHomeManager_.GetAllComponents());
+    currentHealthBarManager.CopyAllComponents(lastValidateHealthBarManager_.GetAllComponents());
 
     //We simulate the frames until the new validated frame
     for (Frame frame = lastValidateFrame_ + 1; frame <= newValidateFrame; frame++)
@@ -212,6 +217,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
         currentPlayerManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPhysicsManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentHomeManager_.FixedUpdate(sf::seconds(fixedPeriod));
+        currentHealthBarManager.FixedUpdate(sf::seconds(fixedPeriod));
     }
     //Definitely remove DESTROY entities
     for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
@@ -227,6 +233,7 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
     lastValidatePhysicsManager_.CopyAllComponents(currentPhysicsManager_);
     lastValidateBoundaryManager_.CopyAllComponents(currentBoundaryManager_.GetAllComponents());
     lastValidateHomeManager_.CopyAllComponents(currentHomeManager_.GetAllComponents());
+    lastValidateHealthBarManager_.CopyAllComponents(currentHealthBarManager.GetAllComponents());
     lastValidateFrame_ = newValidateFrame;
     createdEntities_.clear();
 }
@@ -389,6 +396,22 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         --damagedPlayerCharacter.health;
         damagedPlayerCharacter.hurtTime = playerHurtPeriod;
 
+        //update corresponding healthbar
+        for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
+        {
+            if (entityManager_.HasComponent(entity,
+                static_cast<core::EntityMask>(game::ComponentType::HEALTHBAR)))
+            {
+                const auto& healthbar = currentHealthBarManager.GetComponent(entity);
+
+                if(healthbar.playerNumber == home.playerNumber)
+                {
+                    const auto& healthBarScale = currentTransformManager_.GetScale(entity);
+                    currentTransformManager_.SetScale(entity, sf::Vector2f(static_cast<float>(damagedPlayerCharacter.health) / static_cast<float>(playerHealth), healthBarScale.y));
+                }
+            }
+        }
+
         gameManager_.DestroyBall(ballEntity);
         currentPlayerManager_.SetComponent(damagedPlayerEntity, damagedPlayerCharacter);
     };
@@ -435,6 +458,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         }*/
         //ManageCollision(player, entity2, ball, entity1);
     }
+
     if(entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BOUNDARY)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
@@ -451,6 +475,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         //const auto velocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
         //currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithBoundary));
     }
+
     if(entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::HOME)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
@@ -567,6 +592,28 @@ void RollbackManager::SpawnHome(core::Entity entity, PlayerNumber playerNumber, 
 void RollbackManager::SpawnVizualizer(core::Entity entity, core::Vec2f position)
 {
     createdEntities_.push_back({ entity, testedFrame_ });
+
+    currentTransformManager_.AddComponent(entity);
+    currentTransformManager_.SetPosition(entity, position);
+}
+
+void RollbackManager::SpawnHealthBar(core::Entity entity, core::Vec2f position)
+{
+    createdEntities_.push_back({entity,  testedFrame_ });
+    
+    currentTransformManager_.AddComponent(entity);
+    currentTransformManager_.SetPosition(entity, position);
+}
+
+void RollbackManager::SpawnHealthBarBackground(core::Entity entity, PlayerNumber playerNumber, core::Vec2f position)
+{
+    createdEntities_.push_back({ entity,  testedFrame_ });
+
+    currentHealthBarManager.AddComponent(entity);
+    currentHealthBarManager.SetComponent(entity, { playerNumber, position });
+
+    lastValidateHealthBarManager_.AddComponent(entity);
+	lastValidateHealthBarManager_.SetComponent(entity, { playerNumber, position });
 
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);

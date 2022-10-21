@@ -1,4 +1,4 @@
-#include "game/home_manager.h"
+#include "game/healthbar_manager.h"
 #include "game/game_manager.h"
 
 #ifdef TRACY_ENABLE
@@ -7,12 +7,12 @@
 
 namespace game
 {
-HomeManager::HomeManager(core::EntityManager& entityManager, GameManager& gameManager) :
+HealthBarManager::HealthBarManager(core::EntityManager& entityManager, GameManager& gameManager) :
 ComponentManager(entityManager), gameManager_(gameManager)
 {
 }
 
-void HomeManager::FixedUpdate(sf::Time dt)
+void HealthBarManager::FixedUpdate(sf::Time dt)
 {
 #ifdef TRACY_ENABLE
 	ZoneScoped;

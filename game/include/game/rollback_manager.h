@@ -8,7 +8,7 @@
 #include "network/packet_type.h"
 #include "boundary_manager.h"
 #include "home_manager.h"
-#include "SFML/System/Clock.hpp"
+#include "healthbar_manager.h"
 
 
 namespace game
@@ -71,7 +71,9 @@ public:
     void SpawnBall(core::Entity entity, core::Vec2f position, core::Vec2f velocity);
     void SpawnBoundary(core::Entity entity, core::Vec2f position);
     void SpawnHome(core::Entity entity, PlayerNumber playerNumber, core::Vec2f position);
-    void SpawnVizualizer(core::Entity entity, core::Vec2f position);
+    void SpawnHealthBar(core::Entity entity, core::Vec2f position);
+    void SpawnHealthBarBackground(core::Entity entity, PlayerNumber playerNumber, core::Vec2f position);
+    [[maybe_unused]] void SpawnVizualizer(core::Entity entity, core::Vec2f position);
     /**
      * \brief DestroyEntity is a method that does not destroy the entity definitely, but puts the DESTROY flag on.
      * An entity is truly destroyed when the destroy frame is validated.
@@ -100,6 +102,8 @@ private:
     BallManager currentBallManager_;
     BoundaryManager currentBoundaryManager_;
     HomeManager currentHomeManager_;
+    HealthBarManager currentHealthBarManager;
+
     /**
      * Last Validate (confirm frame) Component Managers used for rollback
      */
@@ -108,6 +112,7 @@ private:
     BallManager lastValidateBallManager_;
     BoundaryManager lastValidateBoundaryManager_;
     HomeManager lastValidateHomeManager_;
+    HealthBarManager lastValidateHealthBarManager_;
     /**
      * \brief lastValidateFrame_ is the last validated frame from the server side.
      */

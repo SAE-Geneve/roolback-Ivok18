@@ -45,7 +45,7 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
                 for(PlayerNumber p = 0; p < maxPlayerNmb; p++)
                 {
                     SpawnNewHome(p);
-                    //SpawnNewHealthBar
+                    SpawnNewHealthbar(p);
                 }
                 SpawnNewBall();
                 auto startGamePacket = std::make_unique<StartGamePacket>();

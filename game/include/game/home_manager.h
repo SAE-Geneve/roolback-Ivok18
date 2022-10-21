@@ -5,7 +5,7 @@
 namespace game
 {
 /**
-* \brief Home is a struct that contains info about the Home
+* \brief Home is a struct that contains info about the a player home
 */
 struct Home
 {

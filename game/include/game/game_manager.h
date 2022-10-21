@@ -33,7 +33,9 @@ public:
     virtual void DestroyBall(core::Entity entity);
     virtual core::Entity SpawnBoundary(core::Vec2f position);
     virtual core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position);
-    [[only_if_needed]] virtual core::Entity SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color);
+    virtual core::Entity SpawnHealthBar(core::Vec2f position);
+    virtual core::Entity SpawnHealthBarBackground(PlayerNumber playerNumber, core::Vec2f position);
+    [[maybe_unused]] virtual core::Entity SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color);
 
     [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
     [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
@@ -89,7 +91,9 @@ public:
     core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity) override;
     core::Entity SpawnBoundary(core::Vec2f position) override;
     core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position) override;
-    [[only_if_needed]] void SpawnVizualizer(core::Entity& entity, sf::Texture& texture, sf::Color color);
+    core::Entity SpawnHealthBar(core::Vec2f position) override;
+    core::Entity SpawnHealthBarBackground(PlayerNumber, core::Vec2f position) override;
+    [[maybe_unused]] void SpawnVizualizer(core::Entity& entity, sf::Texture& texture, sf::Color color);
     void FixedUpdate();
     void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame) override;
     void DrawImGui() override;
@@ -119,6 +123,8 @@ protected:
     sf::Texture ballTexture_;
     sf::Texture boundaryTexture_;
     sf::Texture homeTexture_;
+    sf::Texture healthbarTexture_;
+    sf::Texture healthbarBackgroundTexture_;
     sf::Font font_;
 
     sf::Text textRenderer_;

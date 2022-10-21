@@ -19,6 +19,7 @@ enum class PacketType : std::uint8_t
     SPAWN_BALL,
     SPAWN_BOUNDARY,
     SPAWN_HOME,
+    SPAWN_HEALTHBAR,
     VALIDATE_STATE,
     START_GAME,
     JOIN_ACK,
@@ -208,6 +209,26 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnHomePacket& spawnHomePack
 }
 
 /**
+* \brief SpawnHealthbarPacket is a TCP packet sent to all clients to notify of the spawn of a player healthBar
+*/
+struct SpawnHealthBarPacket : TypedPacket<PacketType::SPAWN_HEALTHBAR>
+{
+    PlayerNumber playerNumber = INVALID_PLAYER;
+    std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const SpawnHealthBarPacket& spawnHealthbarPacket)
+{
+    return packet << spawnHealthbarPacket.playerNumber << spawnHealthbarPacket.pos;
+}
+
+
+inline sf::Packet& operator>>(sf::Packet& packet, SpawnHealthBarPacket& spawnHealthbarPacket)
+{
+    return packet >> spawnHealthbarPacket.playerNumber >> spawnHealthbarPacket.pos;
+}
+
+/**
  * \brief PlayerInputPacket is a UDP Packet sent by the player client and then replicated by the server to all clients to share the currentFrame
  * and all the previous ones player inputs.
  */
@@ -324,7 +345,13 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
     }
     case PacketType::SPAWN_HOME:
     {
-        const auto & packetTmp = static_cast<SpawnHomePacket&>(sendingPacket);
+        const auto& packetTmp = static_cast<SpawnHomePacket&>(sendingPacket);
+        packet << packetTmp;
+        break;
+    }
+    case PacketType::SPAWN_HEALTHBAR:
+    {
+        const auto& packetTmp = static_cast<SpawnHealthBarPacket&>(sendingPacket);
         packet << packetTmp;
         break;
     }
@@ -409,6 +436,13 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
         packet >> *spawnHomePacket;
         return spawnHomePacket;
 	}
+    case PacketType::SPAWN_HEALTHBAR:
+    {
+        auto spawnHealthbarPacket = std::make_unique<SpawnHealthBarPacket>();
+        spawnHealthbarPacket->packetType = packetTmp.packetType;
+        packet >> *spawnHealthbarPacket;
+        return spawnHealthbarPacket;
+    }
     case PacketType::INPUT:
     {
         auto playerInputPacket = std::make_unique<PlayerInputPacket>();

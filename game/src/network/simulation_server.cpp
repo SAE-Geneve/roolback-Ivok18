@@ -174,5 +174,16 @@ void SimulationServer::SpawnNewHome(PlayerNumber playerNumberToSpawnHomeFor)
     core::LogDebug("[Server] Spawn a player's home");
     SendReliablePacket(std::move(spawnHomePacket));
 }
+void SimulationServer::SpawnNewHealthbar(PlayerNumber playerNumber)
+{
+    const auto pos = (playerNumber == 0) ? leftHealthbarPos : rightHealthbarPos;
+
+    auto spawnHealthbarPacket = std::make_unique<SpawnHealthBarPacket>();
+    spawnHealthbarPacket->packetType = PacketType::SPAWN_HEALTHBAR;
+    spawnHealthbarPacket->pos = core::ConvertToBinary(pos);
+    spawnHealthbarPacket->playerNumber = playerNumber;
+    core::LogDebug("[Server] Spawn a player healthbar");
+    SendReliablePacket(std::move(spawnHealthbarPacket));
+}
 
 }

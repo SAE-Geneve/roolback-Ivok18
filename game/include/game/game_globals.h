@@ -51,7 +51,11 @@ constexpr core::Vec2f leftHomePos(-9.5f, 0.f);
 constexpr core::Vec2f rightHomePos(9.5f, 0.f);
 constexpr float homeScaleX = 500.f; //box scale, not transform scale  //0.05f;
 constexpr float homeScaleY = 4.25f; //box scale, not transform scale
-
+/**
+* brief healthbars global data
+*/
+constexpr  core::Vec2f leftHealthbarPos(-9.47f, 4.5f);
+constexpr core::Vec2f rightHealthbarPos(7.67f, 4.5f);
 /**
 * brief players global data 
 */
@@ -124,7 +128,8 @@ enum class ComponentType : core::EntityMask
     PLAYER_INPUT = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 3u,
     DESTROYED = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 4u,
     BOUNDARY = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 5u,
-    HOME = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 6u
+    HOME = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 6u,
+    HEALTHBAR = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 7u
 };
 
 /**

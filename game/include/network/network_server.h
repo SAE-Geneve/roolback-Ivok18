@@ -49,7 +49,8 @@ protected:
     void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) override;
     void SpawnNewBall() override;
     void SpawnNewBoundary(core::Vec2f pos) override;
-    void SpawnNewHome(PlayerNumber lastPlayerNumber) override;
+    void SpawnNewHome(PlayerNumber playerNumber) override;
+    void SpawnNewHealthbar(PlayerNumber playerNumber) override;
 
 private:
     void ProcessReceivePacket(std::unique_ptr<Packet> packet,
