@@ -382,7 +382,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
         textRenderer_.setString(health);
         textRenderer_.setPosition(10, 10);
         textRenderer_.setCharacterSize(20);
-        target.draw(textRenderer_);
+        //target.draw(textRenderer_);
     }
 
 }

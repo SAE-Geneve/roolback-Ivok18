@@ -373,9 +373,22 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         //in either case the ball will go in it's "x-axis" opposite direction
         if ((isBallGoingLeft && isPlayerLeft) || (isBallGoingRight && isPlayerRight))
         {
-            const auto velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
-            currentPhysicsManager_.SetBody(ballEntity, Body(ballBody.position, velocityAfterCollisionWithPlayer));
+            //we calculate ball velocity after it's collision with a player
+            auto ballVelocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
+
+            //we retrieve ball speed after its collision with a player
+            const auto ballSpeedAfterCollisionWithPlayer = std::abs(ballVelocityAfterCollisionWithPlayer.x);
+
+            //if the speed of the ball exceeds it's maximum value, we revert to the speed before collision
+            ballVelocityAfterCollisionWithPlayer = ballSpeedAfterCollisionWithPlayer >= ballMaxSpeed ?
+                core::Vec2f(ballVelocityAfterCollisionWithPlayer) / ballRatioSpeedIncrease :
+                ballVelocityAfterCollisionWithPlayer;
+
+            //we set a new body for the ball with updated velocity 
+            currentPhysicsManager_.SetBody(ballEntity, Body(ballBody.position, ballVelocityAfterCollisionWithPlayer));
+
         }
+        core::LogDebug("highest speed:" + std::to_string(ballBody.velocity.x));
     };
 
     const std::function<void(const core::Entity&)> ManageCollisionBetweenBallAndBoundary =
@@ -404,6 +417,8 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
 
         //we decrease player health
         --damagedPlayerCharacter.health;
+        damagedPlayerCharacter.health = damagedPlayerCharacter.health <= 0 ? 0 : damagedPlayerCharacter.health;
+        
 
         //we find, and update player healthbar
         for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
@@ -421,7 +436,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
             }
         }
       
-
+      
         gameManager_.DestroyBall(ballEntity);
         currentPlayerManager_.SetComponent(damagedPlayerEntity, damagedPlayerCharacter);
     };
@@ -632,7 +647,7 @@ void RollbackManager::SpawnHealthBarBackground(core::Entity entity, PlayerNumber
 void RollbackManager::UpdatePlayerHealthbar(const PlayerCharacter& player, const core::Entity& healthBarEntity)
 {
     const auto healthBarScale = currentTransformManager_.GetScale(healthBarEntity);
-    const auto newScale = sf::Vector2f(static_cast<float>(player.health) / static_cast<float>(playerHealth), healthBarScale.y);
+    const auto newScale = sf::Vector2f(static_cast<float>(player.health) / static_cast<float>(playerMaxHealth), healthBarScale.y);
     currentTransformManager_.SetScale(healthBarEntity, newScale);
 }
 

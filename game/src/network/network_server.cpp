@@ -219,7 +219,7 @@ void NetworkServer::SpawnNewPlayer([[maybe_unused]] ClientId clientId, [[maybe_u
 }
 void NetworkServer::SpawnNewBall()
 {
-    //pick random direction for the ball before notifying clients
+    //pick random direction for the ball 
     const auto pos = core::Vec2f::zero();
     const auto randXDir = core::RandomRange(-1, 1);
     const auto randYDir = core::RandomRange(-1, 1);

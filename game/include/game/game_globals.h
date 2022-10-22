@@ -60,18 +60,19 @@ constexpr core::Vec2f rightHealthbarPos(7.67f, 4.5f);
 * brief players global data 
 */
 constexpr std::uint32_t maxPlayerNmb = 2;
-constexpr short playerHealth = 5;
+constexpr short playerMaxHealth = 5;
 constexpr float playerSpeed = 200.0f;
 constexpr core::Degree playerAngularSpeed = core::Degree(90.0f);
 constexpr float playerShootingPeriod = 0.3f;
 constexpr float playerScaleX = 0.1f; //box scale, not transform scale
 constexpr float playerScaleY = 0.64f; //box scale, not transform scale
-constexpr float playerHurtPeriod = 1.25f; 
+constexpr float playerHurtPeriod = 1.15f; 
 constexpr float playeHurtFlashPeriod = 0.25f;
 
 /**
 * brief ball global data 
 */
+constexpr float ballMaxSpeed = 25.f;
 constexpr float ballInitialSpeed = 2.5f;
 constexpr float ballRatioSpeedIncrease = 1.15f;
 constexpr float ballScale = 0.75f; //transform scale only
