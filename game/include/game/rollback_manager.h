@@ -73,6 +73,7 @@ public:
     void SpawnHome(core::Entity entity, PlayerNumber playerNumber, core::Vec2f position);
     void SpawnHealthBar(core::Entity entity, core::Vec2f position);
     void SpawnHealthBarBackground(core::Entity entity, PlayerNumber playerNumber, core::Vec2f position);
+    void UpdatePlayerHealthbar(const PlayerCharacter& player, const core::Entity& healthBarEntity);
     [[maybe_unused]] void SpawnVizualizer(core::Entity entity, core::Vec2f position);
     /**
      * \brief DestroyEntity is a method that does not destroy the entity definitely, but puts the DESTROY flag on.

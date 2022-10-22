@@ -360,7 +360,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         }
     }
 
-    const std::function<void(const core::Entity&, const core::Entity&)> ManageCollisionWithPlayer =
+    const std::function<void(const core::Entity&, const core::Entity&)> ManageCollisionBetweenBallAndPlayer =
         [this](const auto& ballEntity, const auto& playerEntity)
     {
         const auto& ballBody = currentPhysicsManager_.GetBody(ballEntity);
@@ -378,39 +378,49 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         }
     };
 
-    const std::function<void(const core::Entity&)> ManageCollisionWithBoundary =
+    const std::function<void(const core::Entity&)> ManageCollisionBetweenBallAndBoundary =
         [this](const auto& ballEntity)
     {
         const auto& ballBody = currentPhysicsManager_.GetBody(ballEntity);
-        const auto velocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
+        const auto ballVelocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
 
-        currentPhysicsManager_.SetBody(ballEntity, Body(ballBody.position, velocityAfterCollisionWithBoundary));
+        currentPhysicsManager_.SetBody(ballEntity, Body(ballBody.position, ballVelocityAfterCollisionWithBoundary));
     };
 
-    const std::function<void(const core::Entity&, const core::Entity&)> ManageCollisionWithHome =
+    const std::function<void(const core::Entity&, const core::Entity&)> ManageCollisionBetweenBallAndHome =
         [this](const auto& ballEntity, const auto& homeEntity)
     {
+        //we retrieve home data 
         const Home& home = currentHomeManager_.GetComponent(homeEntity);
+
+        //using home data (player number), we retrieve the player entity connected to the home 
         const auto& damagedPlayerEntity = gameManager_.GetEntityFromPlayerNumber(home.playerNumber);
+
+        //using player entity, we retrieve player character data
         auto& damagedPlayerCharacter = currentPlayerManager_.GetComponent(damagedPlayerEntity);
-        --damagedPlayerCharacter.health;
+
+        //we activate hurt animation
         damagedPlayerCharacter.hurtTime = playerHurtPeriod;
 
-        //update corresponding healthbar
+        //we decrease player health
+        --damagedPlayerCharacter.health;
+
+        //we find, and update player healthbar
         for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
         {
-            if (entityManager_.HasComponent(entity,
-                static_cast<core::EntityMask>(game::ComponentType::HEALTHBAR)))
+            const bool foundAnHealthBar = entityManager_.HasComponent(entity,
+                static_cast<core::EntityMask>(game::ComponentType::HEALTHBAR)) ? true : false;
+            if (foundAnHealthBar)
             {
                 const auto& healthbar = currentHealthBarManager.GetComponent(entity);
-
-                if(healthbar.playerNumber == home.playerNumber)
+                const bool foundDamagedPlayerHealthBar = healthbar.playerNumber == home.playerNumber ? true : false;
+                if (foundDamagedPlayerHealthBar)
                 {
-                    const auto& healthBarScale = currentTransformManager_.GetScale(entity);
-                    currentTransformManager_.SetScale(entity, sf::Vector2f(static_cast<float>(damagedPlayerCharacter.health) / static_cast<float>(playerHealth), healthBarScale.y));
+                    gameManager_.UpdatePlayerHealthBar(damagedPlayerCharacter, entity);
                 }
             }
         }
+      
 
         gameManager_.DestroyBall(ballEntity);
         currentPlayerManager_.SetComponent(damagedPlayerEntity, damagedPlayerCharacter);
@@ -419,7 +429,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
     if (entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
-        ManageCollisionWithPlayer(entity2, entity1);
+        ManageCollisionBetweenBallAndPlayer(entity2, entity1);
         /*const auto& ballBody = currentPhysicsManager_.GetBody(entity2);
         const auto& playerBody = currentPhysicsManager_.GetBody(entity1);
         const auto isPlayerLeft = playerBody.position.x < 0 ? true : false;
@@ -440,7 +450,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
     if (entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)) &&
         entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
-        ManageCollisionWithPlayer(entity1, entity2);
+        ManageCollisionBetweenBallAndPlayer(entity1, entity2);
         /*const auto& ballBody = currentPhysicsManager_.GetBody(entity1);
         const auto& playerBody = currentPhysicsManager_.GetBody(entity2);
         const auto isPlayerLeft = playerBody.position.x < 0 ? true : false;
@@ -462,7 +472,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
     if(entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BOUNDARY)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
-        ManageCollisionWithBoundary(entity2);
+        ManageCollisionBetweenBallAndBoundary(entity2);
         //const auto& ballBody = currentPhysicsManager_.GetBody(entity2);
         //const auto velocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
         //currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithBoundary));
@@ -470,7 +480,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
     if (entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BOUNDARY)) &&
         entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
-        ManageCollisionWithBoundary(entity1);
+        ManageCollisionBetweenBallAndBoundary(entity1);
         //const auto& ballBody = currentPhysicsManager_.GetBody(entity1);
         //const auto velocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
         //currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithBoundary));
@@ -479,12 +489,12 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
     if(entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::HOME)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
-        ManageCollisionWithHome(entity2, entity1);
+        ManageCollisionBetweenBallAndHome(entity2, entity1);
     }
     if (entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::HOME)) &&
         entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
-        ManageCollisionWithHome(entity1, entity2);
+        ManageCollisionBetweenBallAndHome(entity1, entity2);
     }
 
 }
@@ -618,6 +628,14 @@ void RollbackManager::SpawnHealthBarBackground(core::Entity entity, PlayerNumber
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
 }
+
+void RollbackManager::UpdatePlayerHealthbar(const PlayerCharacter& player, const core::Entity& healthBarEntity)
+{
+    const auto healthBarScale = currentTransformManager_.GetScale(healthBarEntity);
+    const auto newScale = sf::Vector2f(static_cast<float>(player.health) / static_cast<float>(playerHealth), healthBarScale.y);
+    currentTransformManager_.SetScale(healthBarEntity, newScale);
+}
+
 
 void RollbackManager::DestroyEntity(core::Entity entity)
 {

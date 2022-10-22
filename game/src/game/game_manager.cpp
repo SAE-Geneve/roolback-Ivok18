@@ -123,6 +123,12 @@ core::Entity GameManager::SpawnHealthBarBackground(PlayerNumber playerNumber, co
     return entity;
 }
 
+void GameManager::UpdatePlayerHealthBar(PlayerCharacter player, core::Entity& healthbarEntity)
+{
+    rollbackManager_.UpdatePlayerHealthbar(player, healthbarEntity);
+}
+
+
 core::Entity GameManager::SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color)
 {
     const core::Entity entity = entityManager_.CreateEntity();

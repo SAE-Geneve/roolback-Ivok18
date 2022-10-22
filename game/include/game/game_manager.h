@@ -35,6 +35,7 @@ public:
     virtual core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position);
     virtual core::Entity SpawnHealthBar(core::Vec2f position);
     virtual core::Entity SpawnHealthBarBackground(PlayerNumber playerNumber, core::Vec2f position);
+    virtual void UpdatePlayerHealthBar(PlayerCharacter player, core::Entity& healthbarEntity);
     [[maybe_unused]] virtual core::Entity SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color);
 
     [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
