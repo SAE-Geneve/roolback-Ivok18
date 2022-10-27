@@ -232,7 +232,7 @@ void NetworkServer::SpawnNewBall()
     spawnBallPacket->velocity = core::ConvertToBinary(velocity);
     spawnBallPacket->pos = core::ConvertToBinary(pos);
     core::LogDebug("[Server] Spawn new ball");
-    gameManager_.SpawnBall(pos, velocity),
+
     SendReliablePacket(std::move(spawnBallPacket));
 }
 void NetworkServer::SpawnNewBoundary(core::Vec2f pos)
@@ -240,8 +240,8 @@ void NetworkServer::SpawnNewBoundary(core::Vec2f pos)
     auto spawnBoundaryPacket = std::make_unique<SpawnBoundaryPacket>();
     spawnBoundaryPacket->packetType = PacketType::SPAWN_BOUNDARY;
     spawnBoundaryPacket->pos = core::ConvertToBinary(pos);
-
     core::LogDebug("[Server] Spawn game boundary");
+
     SendReliablePacket(std::move(spawnBoundaryPacket));
 }
 
@@ -254,6 +254,7 @@ void NetworkServer::SpawnNewHome(PlayerNumber playerNumber)
     spawnHomePacket->pos = core::ConvertToBinary(pos);
     spawnHomePacket->playerNumber = playerNumber;
     core::LogDebug("[Server] Spawn a player's home");
+
     SendReliablePacket(std::move(spawnHomePacket));
 }
 
@@ -266,6 +267,7 @@ void NetworkServer::SpawnNewHealthbar(PlayerNumber playerNumber)
     spawnHealthbarPacket->pos = core::ConvertToBinary(pos);
     spawnHealthbarPacket->playerNumber = playerNumber;
     core::LogDebug("[Server] Spawn a player healthbar");
+
     SendReliablePacket(std::move(spawnHealthbarPacket));
 }
 

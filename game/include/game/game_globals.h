@@ -73,9 +73,12 @@ constexpr float playeHurtFlashPeriod = 0.25f;
 * brief ball global data 
 */
 constexpr float ballMaxSpeed = 25.f;
-constexpr float ballInitialSpeed = 2.5f;
+constexpr float ballInitialSpeed = 3.f;
 constexpr float ballRatioSpeedIncrease = 1.15f;
 constexpr float ballScale = 0.75f; //transform scale only
+constexpr core::Color ballStartColor = core::Color::transparent();
+constexpr float ballLeftRespawnX = -8.5f;
+constexpr float ballRightRespawnX = 8.5f;
 //constexpr float bulletPeriod = 3.0f;
 
 /**

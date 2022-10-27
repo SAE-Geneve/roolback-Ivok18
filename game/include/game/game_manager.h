@@ -20,6 +20,14 @@ namespace game
 {
 class PacketSenderInterface;
 
+class OnHealthChangeTriggerInterface
+{
+public:
+    virtual ~OnHealthChangeTriggerInterface() = default;
+    virtual void OnHealthChangeTrigger(core::Vec2f velocity) = 0;
+};
+
+
 /**
  * \brief GameManager is a class which manages the state of the game. It is shared between the client and the server.
  */
@@ -28,8 +36,11 @@ class GameManager
 public:
     GameManager();
     virtual ~GameManager() = default;
+    void RegisterHealthChangeTriggerListener(OnHealthChangeTriggerInterface& onHealthChangeTriggerInterface);
+    void NotifyServerForNewRound(core::Vec2f velocity);
+
     virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
-    virtual core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity);
+    virtual core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity, core::Color color);
     virtual void DestroyBall(core::Entity entity);
     virtual core::Entity SpawnBoundary(core::Vec2f position);
     virtual core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position);
@@ -59,6 +70,8 @@ protected:
     std::array<core::Entity, maxPlayerNmb> playerEntityMap_{};
     Frame currentFrame_ = 0;
     PlayerNumber winner_ = INVALID_PLAYER;
+private:
+    core::Action<core::Vec2f> onHealthChangeTriggerAction_;
 };
 
 /**
@@ -66,6 +79,7 @@ protected:
  */
 class ClientGameManager final : public GameManager,
                                 public core::DrawInterface, public core::DrawImGuiInterface, public core::SystemInterface
+
 {
 public:
     enum State : std::uint32_t
@@ -82,6 +96,7 @@ public:
     [[nodiscard]] sf::Vector2u GetWindowSize() const { return windowSize_; }
     void Draw(sf::RenderTarget& target) override;
     void SetClientPlayer(PlayerNumber clientPlayer);
+
     /**
      * \brief SpawnPlayer is method that is called when receiving a SpawnPlayerPacket from the server.
      * \param playerNumber is the player number to be spawned
@@ -89,12 +104,14 @@ public:
      * \param rotation is the spawning angle of the player character 
      */
     void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation) override;
-    core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity) override;
+    core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity, core::Color color) override;
     core::Entity SpawnBoundary(core::Vec2f position) override;
     core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position) override;
     core::Entity SpawnHealthBar(core::Vec2f position) override;
     core::Entity SpawnHealthBarBackground(PlayerNumber, core::Vec2f position) override;
     [[maybe_unused]] void SpawnVizualizer(core::Entity& entity, sf::Texture& texture, sf::Color color);
+
+    void SetupNewRound(Body newBall);
     void FixedUpdate();
     void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame) override;
     void DrawImGui() override;
@@ -116,8 +133,7 @@ protected:
     float fixedTimer_ = 0.0f;
     unsigned long long startingTime_ = 0;
     std::uint32_t state_ = 0;
-    int ballVisibilityFlag_ = 0;
-    
+
 
     sf::Texture playerLeftTexture_;
     sf::Texture playerRightTexture_;
@@ -130,5 +146,6 @@ protected:
 
     sf::Text textRenderer_;
     bool drawPhysics_ = false;
+    int ballVisibilityFlag_ = 0;
 };
 }

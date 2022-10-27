@@ -2,6 +2,7 @@
 #include <SFML/System/Time.hpp>
 
 #include "game_globals.h"
+#include "utils/action_utility.h"
 
 namespace game
 {
@@ -17,7 +18,14 @@ struct PlayerCharacter
     PlayerNumber playerNumber = INVALID_PLAYER;
     short health = playerMaxHealth;
     float hurtTime = 0.0f;
+    float speedMultiplier = 1.0f;
 };
+
+/**
+* \brief OnHealthChangeTrigger is an interface for classes that needs to be called when a player health is modified.
+* It needs to be registered in the PlayerCharacterManager
+*/
+
 class GameManager;
 
 /**
@@ -32,5 +40,6 @@ public:
 private:
     PhysicsManager& physicsManager_;
     GameManager& gameManager_;
+
 };
 }

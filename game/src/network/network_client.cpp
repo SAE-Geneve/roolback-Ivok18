@@ -35,6 +35,8 @@ void NetworkClient::Begin()
 #ifdef ENABLE_SQLITE
     debugDb_.Open(fmt::format("Client_{}.db", static_cast<unsigned>(clientId_)));
 #endif
+
+   
 }
 
 void NetworkClient::Update(sf::Time dt)
@@ -313,4 +315,5 @@ void NetworkClient::ReceiveNetPacket(sf::Packet& packet, PacketSource source)
         break;
     }
 }
+
 }

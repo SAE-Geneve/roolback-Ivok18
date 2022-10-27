@@ -12,7 +12,7 @@ namespace game
 struct Ball
 {
     float remainingTime = 0.0f;
-    PlayerNumber playerNumber = INVALID_PLAYER;
+    PlayerNumber playerNumber = 1;
 };
 
 

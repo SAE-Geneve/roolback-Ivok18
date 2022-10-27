@@ -12,6 +12,7 @@ namespace game
  * \brief Server is an interface to a network or simulated server. It owns a simple GameManager.
  */
 class Server : public PacketSenderInterface, public core::SystemInterface
+
 {
 protected:
 
@@ -30,6 +31,7 @@ protected:
     GameManager gameManager_;
     PlayerNumber lastPlayerNumber_ = 0;
     std::array<ClientId, maxPlayerNmb> clientMap_{};
+
 
 };
 }

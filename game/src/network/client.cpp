@@ -151,8 +151,8 @@ void Client::ReceivePacket(const Packet* packet)
         const auto* spawnBallPacket = static_cast<const SpawnBallPacket*>(packet);
         const auto pos = core::ConvertFromBinary<core::Vec2f>(spawnBallPacket->pos);
         const auto velocity = core::ConvertFromBinary<core::Vec2f>(spawnBallPacket->velocity);
-        
-        gameManager_.SpawnBall(pos, velocity);
+
+        gameManager_.SpawnBall(pos, velocity, ballStartColor);
         break;
     }
     case PacketType::SPAWN_BOUNDARY:
@@ -182,8 +182,25 @@ void Client::ReceivePacket(const Packet* packet)
         gameManager_.SpawnHealthBarBackground(playerNumber, pos);
         break;
     }
+    case PacketType::START_NEW_ROUND:
+    {
+        const auto* startNewRoundPacket = static_cast<const StartNewRoundPacket*>(packet);
+        const auto newBallPosition = core::ConvertFromBinary <core::Vec2f> (startNewRoundPacket->newBallPosition);
+        const auto newBallVelocity = core::ConvertFromBinary <core::Vec2f> (startNewRoundPacket->newBallVelocity);
+        const Body newBall(newBallPosition, newBallVelocity);
+
+        core::LogDebug("Start New Round");
+        gameManager_.SetupNewRound(newBall);
+        break;
+    }
     default:;
     }
+}
+
+void Client::OnHealthChangeTrigger(core::Vec2f velocity)
+{
+    auto startNewRoundPacket = std::make_unique<StartNewRoundPacket>();
+    SendReliablePacket(std::move(startNewRoundPacket));
 }
 
 void Client::Update(sf::Time dt)

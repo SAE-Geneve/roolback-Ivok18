@@ -148,7 +148,7 @@ void SimulationServer::SpawnNewBall()
     spawnBallPacket->velocity = core::ConvertToBinary(velocity);
     spawnBallPacket->pos = core::ConvertToBinary(pos);
     core::LogDebug("[Server] Spawn new ball");
-    gameManager_.SpawnBall(pos,velocity),
+    gameManager_.SpawnBall(pos, velocity, ballStartColor);
     SendReliablePacket(std::move(spawnBallPacket));
 }
 

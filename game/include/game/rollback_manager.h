@@ -15,6 +15,7 @@ namespace game
 {
 class GameManager;
 
+
 /**
  * \brief CreatedEntity is a struct that contains information on the newly created entities.
  * It is used by the RollbackManager to destroy newly created entities when going back in time.

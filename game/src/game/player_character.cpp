@@ -10,14 +10,13 @@ PlayerCharacterManager::PlayerCharacterManager(core::EntityManager& entityManage
     ComponentManager(entityManager),
     physicsManager_(physicsManager),
     gameManager_(gameManager)
-
 {
-
+   
 }
 
 void PlayerCharacterManager::FixedUpdate(sf::Time dt)
 {
-
+    
 #ifdef TRACY_ENABLE
     ZoneScoped;
 #endif
@@ -44,8 +43,8 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
         dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.asSeconds()));
 
         //const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
-        const auto velocity = ((down ? core::Vec2f(0, -playerSpeed) : core::Vec2f::zero() +
-									(up ? core::Vec2f(0, playerSpeed) : core::Vec2f::zero())));
+        auto velocity = ((down ? core::Vec2f(0, -playerSpeed * playerCharacter.speedMultiplier) : core::Vec2f::zero() +
+									(up ? core::Vec2f(0, playerSpeed * playerCharacter.speedMultiplier) : core::Vec2f::zero())));
 
         playerBody.velocity = velocity * dt.asSeconds();
 

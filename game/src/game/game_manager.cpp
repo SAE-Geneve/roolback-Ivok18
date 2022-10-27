@@ -18,11 +18,31 @@
 namespace game
 {
 
+
 GameManager::GameManager() :
     transformManager_(entityManager_),
     rollbackManager_(*this, entityManager_)
 {
     playerEntityMap_.fill(core::INVALID_ENTITY);
+}
+
+void GameManager::RegisterHealthChangeTriggerListener(OnHealthChangeTriggerInterface& onHealthChangeTriggerInterface)
+{
+    onHealthChangeTriggerAction_.RegisterCallback(
+        [&onHealthChangeTriggerInterface](core::Vec2f velocity) {onHealthChangeTriggerInterface.OnHealthChangeTrigger(velocity); });
+}
+
+void GameManager::NotifyServerForNewRound(core::Vec2f velocity)
+{
+    //we pick random direction for new ball 
+    const auto pos = core::Vec2f::zero();
+    const auto randXDir = core::RandomRange(-1, 1);
+    const auto randYDir = core::RandomRange(-1, 1);
+    const auto velX = randXDir <= 0 ? -ballInitialSpeed : ballInitialSpeed;
+    const auto velY = randYDir <= 0 ? -ballInitialSpeed : ballInitialSpeed;
+    const auto v = core::Vec2f(velX, velY);
+
+    onHealthChangeTriggerAction_.Execute(v);
 }
 
 void GameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation)
@@ -66,7 +86,7 @@ void GameManager::Validate(Frame newValidateFrame)
     rollbackManager_.ValidateFrame(newValidateFrame);
 }
 
-core::Entity GameManager::SpawnBall(core::Vec2f position, core::Vec2f velocity)
+core::Entity GameManager::SpawnBall(core::Vec2f position, core::Vec2f velocity, core::Color color)
 {
     const core::Entity entity = entityManager_.CreateEntity();
 
@@ -170,6 +190,7 @@ ClientGameManager::ClientGameManager(PacketSenderInterface& packetSenderInterfac
     packetSenderInterface_(packetSenderInterface),
     spriteManager_(entityManager_, transformManager_)
 {
+    
 }
 
 void ClientGameManager::Begin()
@@ -236,7 +257,7 @@ void ClientGameManager::Update(sf::Time dt)
                 {
                       auto leftV = std::fmod(player.hurtTime, playeHurtFlashPeriod);
                       auto rightV = playeHurtFlashPeriod / 2.0f;
-                      core::LogDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.hurtTime));
+                      //core::LogDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.hurtTime));
                 }
                 
                 if (player.hurtTime > 0.0f &&
@@ -313,7 +334,7 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
         if (winner_ == GetPlayerNumber())
         {
             const std::string winnerText = fmt::format("You won!");
-            textRenderer_.setFillColor(sf::Color::White);
+            textRenderer_.setFillColor(playerColors[winner_]);
             textRenderer_.setString(winnerText);
             textRenderer_.setCharacterSize(32);
             const auto textBounds = textRenderer_.getLocalBounds();
@@ -323,8 +344,8 @@ void ClientGameManager::Draw(sf::RenderTarget& target)
         }
         else if (winner_ != INVALID_PLAYER)
         {
-            const std::string winnerText = fmt::format("P{} won!", winner_ + 1);
-            textRenderer_.setFillColor(sf::Color::White);
+            const std::string winnerText = fmt::format("You lose ):");
+            textRenderer_.setFillColor(playerColors[GetPlayerNumber()]);
             textRenderer_.setString(winnerText);
             textRenderer_.setCharacterSize(32);
             const auto textBounds = textRenderer_.getLocalBounds();
@@ -392,6 +413,8 @@ void ClientGameManager::SetClientPlayer(PlayerNumber clientPlayer)
     clientPlayer_ = clientPlayer;
 }
 
+
+
 void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation)
 {
     core::LogDebug(fmt::format("Spawn player: {}", playerNumber));
@@ -413,14 +436,14 @@ void ClientGameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f posit
 
 }
 
-core::Entity ClientGameManager::SpawnBall(core::Vec2f position, core::Vec2f velocity)
+core::Entity ClientGameManager::SpawnBall(core::Vec2f position, core::Vec2f velocity, core::Color color)
 {
-    const auto entity = GameManager::SpawnBall(position, velocity);
+    const auto entity = GameManager::SpawnBall(position, velocity, color);
 
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, ballTexture_);
     spriteManager_.SetOrigin(entity, sf::Vector2f(ballTexture_.getSize()) / 2.0f);
-    spriteManager_.SetColor(entity, core::Color::transparent());
+    spriteManager_.SetColor(entity, color);
 
     return entity;
 }
@@ -428,9 +451,8 @@ core::Entity ClientGameManager::SpawnBall(core::Vec2f position, core::Vec2f velo
 core::Entity ClientGameManager::SpawnBoundary(core::Vec2f position)
 {
     const auto entity = GameManager::SpawnBoundary(position);
-
-    auto vizualizer = GameManager::SpawnVizualizer(position, boundaryTexture_, core::Color::black());
-    SpawnVizualizer(vizualizer, boundaryTexture_, core::Color::black());
+    auto boundaryVizualizer = GameManager::SpawnVizualizer(position, boundaryTexture_, core::Color::black());
+    SpawnVizualizer(boundaryVizualizer, boundaryTexture_, core::Color::black());
 
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, boundaryTexture_);
@@ -443,9 +465,8 @@ core::Entity ClientGameManager::SpawnBoundary(core::Vec2f position)
 core::Entity ClientGameManager::SpawnHome(PlayerNumber playerNumber, core::Vec2f position)
 {
     const auto entity = GameManager::SpawnHome(playerNumber, position);
-
-    auto vizualizer = GameManager::SpawnVizualizer(position, homeTexture_, playerColors[playerNumber]);
-    SpawnVizualizer(vizualizer, homeTexture_, playerColors[playerNumber]);
+    auto homeVizualizer = GameManager::SpawnVizualizer(position, homeTexture_, playerColors[playerNumber]);
+    SpawnVizualizer(homeVizualizer, homeTexture_, playerColors[playerNumber]);
 
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, homeTexture_);
@@ -485,6 +506,16 @@ void ClientGameManager::SpawnVizualizer(core::Entity& vizualizer, sf::Texture& t
     spriteManager_.SetColor(vizualizer, color);
 }
 
+void ClientGameManager::SetupNewRound(Body newBall)
+{
+	for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
+	{
+		if(entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::BALL)))
+		{
+            rollbackManager_.GetCurrentPhysicsManager().SetBody(entity, newBall);
+		}
+	}
+}
 
 void ClientGameManager::FixedUpdate()
 {
@@ -529,10 +560,11 @@ void ClientGameManager::FixedUpdate()
                 if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::BALL)))
                 {
                     spriteManager_.SetColor(entity, core::Color::black());
+                    ballVisibilityFlag_++;
                 }
             }
-            ballVisibilityFlag_++;
         }
+       
     }
 
     //We send the player inputs when the game started
@@ -590,6 +622,7 @@ void ClientGameManager::DrawImGui()
     }
     ImGui::Checkbox("Draw Physics", &drawPhysics_);
 }
+
 
 void ClientGameManager::ConfirmValidateFrame(Frame newValidateFrame,
     const std::array<PhysicsState, maxPlayerNmb>& physicsStates)
