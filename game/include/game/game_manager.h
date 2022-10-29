@@ -8,7 +8,6 @@
 
 #include "game_globals.h"
 #include "rollback_manager.h"
-#include "star_background.h"
 #include "engine/entity.h"
 #include "graphics/graphics.h"
 #include "graphics/sprite.h"
@@ -20,13 +19,6 @@ namespace game
 {
 class PacketSenderInterface;
 
-class OnHealthChangeTriggerInterface
-{
-public:
-    virtual ~OnHealthChangeTriggerInterface() = default;
-    virtual void OnHealthChangeTrigger(core::Vec2f velocity) = 0;
-};
-
 
 /**
  * \brief GameManager is a class which manages the state of the game. It is shared between the client and the server.
@@ -36,18 +28,22 @@ class GameManager
 public:
     GameManager();
     virtual ~GameManager() = default;
-    void RegisterHealthChangeTriggerListener(OnHealthChangeTriggerInterface& onHealthChangeTriggerInterface);
-    void NotifyServerForNewRound(core::Vec2f velocity);
-
-    virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation);
-    virtual core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity, core::Color color);
+    virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position);
+    virtual core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity);
     virtual void DestroyBall(core::Entity entity);
     virtual core::Entity SpawnBoundary(core::Vec2f position);
     virtual core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position);
     virtual core::Entity SpawnHealthBar(core::Vec2f position);
     virtual core::Entity SpawnHealthBarBackground(PlayerNumber playerNumber, core::Vec2f position);
     virtual void UpdatePlayerHealthBar(PlayerCharacter player, core::Entity& healthbarEntity);
-    [[maybe_unused]] virtual core::Entity SpawnVizualizer(core::Vec2f position, sf::Texture& texture, sf::Color color);
+    /**
+     * \brief SpawnVisualizer is a method that spawns entity whose goal is to act as a visualizer for another entity
+     * It needs to be used when the other entity transform mismatches with its box collider
+     * \param position is where the visualizer will be spawned
+     * \param texture is the texture of the entity
+     * \param color is color of the entity
+     */
+    core::Entity SpawnVisualizer(core::Vec2f position, [[maybe_unused]] sf::Texture& texture, [[maybe_unused]] sf::Color color);
 
     [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
     [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
@@ -98,20 +94,54 @@ public:
     void SetClientPlayer(PlayerNumber clientPlayer);
 
     /**
-     * \brief SpawnPlayer is method that is called when receiving a SpawnPlayerPacket from the server.
+     * \brief SpawnPlayer is a method that is called when receiving a SpawnPlayerPacket from the server.
      * \param playerNumber is the player number to be spawned
      * \param position is where the player character will be spawned
      * \param rotation is the spawning angle of the player character 
      */
-    void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::Degree rotation) override;
-    core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity, core::Color color) override;
-    core::Entity SpawnBoundary(core::Vec2f position) override;
-    core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position) override;
-    core::Entity SpawnHealthBar(core::Vec2f position) override;
-    core::Entity SpawnHealthBarBackground(PlayerNumber, core::Vec2f position) override;
-    [[maybe_unused]] void SpawnVizualizer(core::Entity& entity, sf::Texture& texture, sf::Color color);
+    void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position) override;
 
-    void SetupNewRound(Body newBall);
+    /**
+     * \brief SpawnBall is method a that is called when receiving a SpawnBallPacket from the server.
+     * \param position is where the ball will be spawned
+     * \param velocity is the velocity of the ball when it spawns
+     */
+    core::Entity SpawnBall(core::Vec2f position, core::Vec2f velocity) override;
+
+    /**
+     * \brief SpawnBoundary is a method that is called when receiving a SpawnBoundaryPacket from the server.
+     * \param position is where the boundary will be spawned
+     */
+    core::Entity SpawnBoundary(core::Vec2f position) override;
+
+    /**
+     * \brief SpawnHome is a method that is called when receiving a SpawnHomePacket from the server.
+     * \param playerNumber is the player number linked to the home
+     * \param position is where the home will be spawned
+     */
+    core::Entity SpawnHome(PlayerNumber playerNumber, core::Vec2f position) override;
+
+    /**
+     * \brief SpawnHealthbar is a method that is called when receiving a SpawnHealthbarPacket from the server.
+     * \param position is where the health bar will be spawned
+     */
+    core::Entity SpawnHealthBar(core::Vec2f position) override;
+
+    /**
+     * \brief SpawnHealthbar is a method that is called when receiving a SpawnHealthbarPacket from the server.
+     * \param playerNumber is the player number linked to the healthbar
+     * \param position is where the health bar background will be spawned
+     */
+    core::Entity SpawnHealthBarBackground(PlayerNumber playerNumber, core::Vec2f position) override;
+
+    /**
+    * \brief VisualizeEntity is a method that give visuals to an entity.
+    * It's used for entities having a mismatch between their transform and their box collider 
+    * \param entity is the entity to visualize
+    * \param texture is the texture of the entity
+    * \param color is the color of the entity
+    */
+    void VisualizeEntity(const core::Entity& entity, const sf::Texture& texture, sf::Color color);
     void FixedUpdate();
     void SetPlayerInput(PlayerNumber playerNumber, PlayerInput playerInput, std::uint32_t inputFrame) override;
     void DrawImGui() override;
@@ -121,15 +151,15 @@ public:
     [[nodiscard]] std::uint32_t GetState() const { return state_; }
 protected:
 
-    void UpdateCameraView();
+    //void UpdateCameraView();
+    //sf::View cameraView_;
 
     PacketSenderInterface& packetSenderInterface_;
     sf::Vector2u windowSize_;
     sf::View originalView_;
-    sf::View cameraView_;
+
     PlayerNumber clientPlayer_ = INVALID_PLAYER;
     core::SpriteManager spriteManager_;
-    StarBackground starBackground_;
     float fixedTimer_ = 0.0f;
     unsigned long long startingTime_ = 0;
     std::uint32_t state_ = 0;
@@ -146,6 +176,12 @@ protected:
 
     sf::Text textRenderer_;
     bool drawPhysics_ = false;
-    int ballVisibilityFlag_ = 0;
+
+    /**
+     * \brief this is an indicator number used to set the ball visible when the start counter ends
+     * 0 -> the ball is not visible
+     * greater than 0 (1,2,3 ...) -> the ball is visible
+     */
+    int ballVisibilityIndicator_ = 0;
 };
 }

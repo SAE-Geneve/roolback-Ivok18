@@ -21,7 +21,6 @@ class HomeManager : public core::ComponentManager<Home, static_cast<core::Entity
 {
 public:
 	explicit HomeManager(core::EntityManager& entityManager, GameManager& gameManager);
-	void FixedUpdate(sf::Time dt);
 private:
 	GameManager& gameManager_;
 };

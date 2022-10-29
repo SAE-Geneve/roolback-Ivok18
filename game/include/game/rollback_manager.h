@@ -68,7 +68,7 @@ public:
     [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
     [[nodiscard]] const core::TransformManager& GetTransformManager() const { return currentTransformManager_; }
     [[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return currentPlayerManager_; }
-    void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation);
+    void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position);
     void SpawnBall(core::Entity entity, core::Vec2f position, core::Vec2f velocity);
     void SpawnBoundary(core::Entity entity, core::Vec2f position);
     void SpawnHome(core::Entity entity, PlayerNumber playerNumber, core::Vec2f position);

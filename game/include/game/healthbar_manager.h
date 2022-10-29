@@ -19,7 +19,6 @@ class HealthBarManager : public core::ComponentManager<HealthBar, static_cast<co
 {
 public:
 	explicit HealthBarManager(core::EntityManager& entityManager, GameManager& gameManager);
-	void FixedUpdate(sf::Time dt);
 private:
 	GameManager& gameManager_;
 };

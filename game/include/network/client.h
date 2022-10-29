@@ -9,20 +9,19 @@ namespace game
  * \brief Client is an interface of a player game manager and the net client interface (receive and send packets).
  * A client needs an ID which is receive by the server through a packet.
  */
-class Client : public core::DrawInterface, public core::DrawImGuiInterface, public PacketSenderInterface, public core::SystemInterface,
-               OnHealthChangeTriggerInterface
+class Client : public core::DrawInterface, public core::DrawImGuiInterface, public PacketSenderInterface, public core::SystemInterface
+              
 {
 public:
     Client() : gameManager_(*this)
     {
-        gameManager_.RegisterHealthChangeTriggerListener(*this);
+       
     }
     virtual void SetWindowSize(sf::Vector2u windowSize)
     {
         gameManager_.SetWindowSize(windowSize);
     }
 
-    void OnHealthChangeTrigger(core::Vec2f velocity) override;
 
     /**
      * \brief ReceiveNetPacket is a method called by an app owning a client when receiving a packet.

@@ -128,8 +128,7 @@ void SimulationServer::SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumb
     const auto pos = spawnPositions[playerNumber] * 3.0f;
     spawnPlayer->pos = ConvertToBinary(pos);
     const auto rotation = spawnRotations[playerNumber];
-    spawnPlayer->angle = core::ConvertToBinary(rotation);
-    gameManager_.SpawnPlayer(playerNumber, pos, rotation);
+    gameManager_.SpawnPlayer(playerNumber, pos);
     SendReliablePacket(std::move(spawnPlayer));
 }
 
@@ -148,7 +147,7 @@ void SimulationServer::SpawnNewBall()
     spawnBallPacket->velocity = core::ConvertToBinary(velocity);
     spawnBallPacket->pos = core::ConvertToBinary(pos);
     core::LogDebug("[Server] Spawn new ball");
-    gameManager_.SpawnBall(pos, velocity, ballStartColor);
+    gameManager_.SpawnBall(pos, velocity);
     SendReliablePacket(std::move(spawnBallPacket));
 }
 

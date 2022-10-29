@@ -11,7 +11,6 @@ namespace game
  */
 struct Ball
 {
-    float remainingTime = 0.0f;
     PlayerNumber playerNumber = 1;
 };
 
@@ -20,13 +19,11 @@ class GameManager;
 
 /**
  * \brief BallManager is a ComponentManager that holds all the balls in one place.
- * It will automatically destroy the ball when remainingTime is over.
  */
 class BallManager : public core::ComponentManager<Ball, static_cast<core::EntityMask>(ComponentType::BALL)>
 {
 public:
     explicit BallManager(core::EntityManager& entityManager, GameManager& gameManager);
-    void FixedUpdate(sf::Time dt);
 private:
     GameManager& gameManager_;
 };

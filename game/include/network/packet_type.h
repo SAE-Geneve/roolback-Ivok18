@@ -20,7 +20,6 @@ enum class PacketType : std::uint8_t
     SPAWN_BOUNDARY,
     SPAWN_HOME,
     SPAWN_HEALTHBAR,
-    START_NEW_ROUND,
     VALIDATE_STATE,
     START_GAME,
     JOIN_ACK,
@@ -135,19 +134,18 @@ struct SpawnPlayerPacket : TypedPacket<PacketType::SPAWN_PLAYER>
     std::array<std::uint8_t, sizeof(ClientId)> clientId{};
     PlayerNumber playerNumber = INVALID_PLAYER;
     std::array<std::uint8_t, sizeof(core::Vec2f)> pos{};
-    std::array<std::uint8_t, sizeof(core::Degree)> angle{};
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const SpawnPlayerPacket& spawnPlayerPacket)
 {
     return packet << spawnPlayerPacket.clientId << spawnPlayerPacket.playerNumber <<
-        spawnPlayerPacket.pos << spawnPlayerPacket.angle;
+        spawnPlayerPacket.pos;
 }
 
 inline sf::Packet& operator>>(sf::Packet& packet, SpawnPlayerPacket& spawnPlayerPacket)
 {
     return packet >> spawnPlayerPacket.clientId >> spawnPlayerPacket.playerNumber >>
-        spawnPlayerPacket.pos >> spawnPlayerPacket.angle;
+        spawnPlayerPacket.pos;
 }
 
 /**
@@ -229,25 +227,7 @@ inline sf::Packet& operator>>(sf::Packet& packet, SpawnHealthBarPacket& spawnHea
     return packet >> spawnHealthbarPacket.playerNumber >> spawnHealthbarPacket.pos;
 }
 
-/**
- * \brief StartNewRoundPacket is a TCP packet sent to all clients to notify of the start of a new round
- * A new round means the spawn of a new ball (happens when a player loses health)
- */
-struct StartNewRoundPacket : TypedPacket<PacketType::START_NEW_ROUND>
-{
-    std::array<std::uint8_t, sizeof(core::Vec2f)> newBallPosition{};
-    std::array<std::uint8_t, sizeof(core::Vec2f)> newBallVelocity{};
-};
 
-inline sf::Packet& operator<<(sf::Packet& packet, const StartNewRoundPacket& startNewRoundPacket)
-{
-    return packet << startNewRoundPacket.newBallPosition << startNewRoundPacket.newBallVelocity;
-}
-
-inline sf::Packet& operator>>(sf::Packet& packet, StartNewRoundPacket& startNewRoundPacket)
-{
-    return packet >> startNewRoundPacket.newBallPosition >> startNewRoundPacket.newBallVelocity;
-}
 
 /**
  * \brief PlayerInputPacket is a UDP Packet sent by the player client and then replicated by the server to all clients to share the currentFrame
@@ -377,13 +357,6 @@ inline void GeneratePacket(sf::Packet& packet, Packet& sendingPacket)
         break;
     }
 
-    case PacketType::START_NEW_ROUND:
-    {
-        const auto& packetTmp = static_cast<StartNewRoundPacket&>(sendingPacket);
-        packet << packetTmp;
-        break;
-    }
-
     case PacketType::INPUT:
     {
         const auto& packetTmp = static_cast<PlayerInputPacket&>(sendingPacket);
@@ -471,13 +444,6 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
         spawnHealthbarPacket->packetType = packetTmp.packetType;
         packet >> *spawnHealthbarPacket;
         return spawnHealthbarPacket;
-    }
-    case PacketType::START_NEW_ROUND:
-    {
-        auto startNewRoundPacket = std::make_unique<StartNewRoundPacket>();
-        startNewRoundPacket->packetType = packetTmp.packetType;
-        packet >> *startNewRoundPacket;
-        return startNewRoundPacket;
     }
     case PacketType::INPUT:
     {

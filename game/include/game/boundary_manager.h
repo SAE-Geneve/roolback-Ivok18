@@ -20,7 +20,6 @@ class BoundaryManager : public core::ComponentManager<Boundary, static_cast<core
 {
 public:
 	explicit BoundaryManager(core::EntityManager& entityManager, GameManager& gameManager);
-	void FixedUpdate(sf::Time dt);
 private:
 	GameManager& gameManager_;
 };

@@ -13,12 +13,10 @@ class PhysicsManager;
  */
 struct PlayerCharacter
 {
-    float shootingTime = 0.0f;
     PlayerInput input = 0u;
     PlayerNumber playerNumber = INVALID_PLAYER;
     short health = playerMaxHealth;
     float hurtTime = 0.0f;
-    float speedMultiplier = 1.0f;
 };
 
 /**

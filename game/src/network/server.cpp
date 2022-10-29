@@ -126,18 +126,6 @@ void Server::ReceivePacket(std::unique_ptr<Packet> packet)
         SendUnreliablePacket(std::move(pingPacket));
         break;
     }
-    case PacketType::START_NEW_ROUND:
-    {
-        auto startNewRoundPacket = std::make_unique<StartNewRoundPacket>();
-        const auto newBallPosition = core::Vec2f::zero();
-        const auto newBallVelocity = core::Vec2f(-1, -1);
-
-        startNewRoundPacket->packetType = PacketType::START_NEW_ROUND;
-        startNewRoundPacket->newBallPosition = core::ConvertToBinary(newBallPosition);
-        startNewRoundPacket->newBallVelocity = core::ConvertToBinary(newBallVelocity);
-        SendReliablePacket(std::move(startNewRoundPacket));
-        break;
-    }
     default: break;
     }
 }

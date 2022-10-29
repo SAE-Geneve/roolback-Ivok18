@@ -10,30 +10,4 @@ BallManager::BallManager(core::EntityManager& entityManager, GameManager& gameMa
     ComponentManager(entityManager), gameManager_(gameManager)
 {
 }
-
-void BallManager::FixedUpdate(sf::Time dt)
-{
-
-#ifdef TRACY_ENABLE
-    ZoneScoped;
-#endif
-    for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
-    {
-        if(entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::DESTROYED)))
-        {
-            continue;
-        }
-        /*if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::BALL)))
-        {
-
-            const auto& bullet = components_[entity];
-            bullet.remainingTime -= dt.asSeconds();
-            if (bullet.remainingTime < 0.0f)
-            {
-                gameManager_.DestroyBall(entity);
-            }
-        }*/
-        
-    }
-}
 }

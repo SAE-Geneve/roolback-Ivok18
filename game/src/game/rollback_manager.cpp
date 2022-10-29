@@ -90,12 +90,8 @@ void RollbackManager::SimulateToCurrentFrame()
             currentPlayerManager_.SetComponent(playerEntity, playerCharacter);
         }
         //Simulate one frame of the game
-        currentBallManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPlayerManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPhysicsManager_.FixedUpdate(sf::seconds(fixedPeriod));
-        currentBoundaryManager_.FixedUpdate(sf::seconds(fixedPeriod));
-        currentHomeManager_.FixedUpdate(sf::seconds(fixedPeriod));
-        currentHealthBarManager.FixedUpdate(sf::seconds(fixedPeriod));
     }
     //Copy the physics states to the transforms
     for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
@@ -215,11 +211,9 @@ void RollbackManager::ValidateFrame(Frame newValidateFrame)
             currentPlayerManager_.SetComponent(playerEntity, playerCharacter);
         }
         //We simulate one frame
-        currentBallManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPlayerManager_.FixedUpdate(sf::seconds(fixedPeriod));
         currentPhysicsManager_.FixedUpdate(sf::seconds(fixedPeriod));
-        currentHomeManager_.FixedUpdate(sf::seconds(fixedPeriod));
-        currentHealthBarManager.FixedUpdate(sf::seconds(fixedPeriod));
+      
     }
     //Definitely remove DESTROY entities
     for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
@@ -300,14 +294,13 @@ PhysicsState RollbackManager::GetValidatePhysicsState(PlayerNumber playerNumber)
     return state;
 }
 
-void RollbackManager::SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::Degree rotation)
+void RollbackManager::SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position)
 {
 #ifdef TRACY_ENABLE
     ZoneScoped;
 #endif
     Body playerBody;
     playerBody.position = position;
-    playerBody.rotation = rotation;
     Box playerBox;
     playerBox.extends.x = playerScaleX;
     playerBox.extends.y = playerScaleY;
@@ -332,7 +325,6 @@ void RollbackManager::SpawnPlayer(PlayerNumber playerNumber, core::Entity entity
 
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
-    currentTransformManager_.SetRotation(entity, rotation);
 }
 
 PlayerInput RollbackManager::GetInputAtFrame(PlayerNumber playerNumber, Frame frame) const
@@ -342,27 +334,8 @@ PlayerInput RollbackManager::GetInputAtFrame(PlayerNumber playerNumber, Frame fr
     return inputs_[playerNumber][currentFrame_ - frame];
 }
 
-
 void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
 {
-   //const std::function<void(const PlayerCharacter&, core::Entity, const Ball&, core::Entity)> ManageCollision =
-        //[this](const auto& player, auto playerEntity, const auto& ball, auto ballEntity)
-    {
-        //if (player.playerNumber != ball.playerNumber)
-        {
-            //gameManager_.DestroyBall(ballEntity);
-            //lower health point
-            /*auto playerCharacter = currentPlayerManager_.GetComponent(playerEntity);
-            if (playerCharacter.hurtTime <= 0.0f)
-            {
-                core::LogDebug(fmt::format("Player {} is hit by ball", playerCharacter.playerNumber));
-                --playerCharacter.health;
-                playerCharacter.hurtTime = playerHurtPeriod;
-            }
-            currentPlayerManager_.SetComponent(playerEntity, playerCharacter);*/
-        }
-    }
-
     const std::function<void(const core::Entity&, const core::Entity&)> ManageCollisionBetweenBallAndPlayer =
         [this](const auto& ballEntity, const auto& playerEntity)
     {
@@ -453,6 +426,7 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
             }
         }
 
+
         PlayerNumber winner = gameManager_.CheckWinner();
         if(winner != INVALID_PLAYER)
         {
@@ -497,66 +471,31 @@ void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
         
     };
 
+    //we manage collision between the ball and players
     if (entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
         ManageCollisionBetweenBallAndPlayer(entity2, entity1);
-        /*const auto& ballBody = currentPhysicsManager_.GetBody(entity2);
-        const auto& playerBody = currentPhysicsManager_.GetBody(entity1);
-        const auto isPlayerLeft = playerBody.position.x < 0 ? true : false;
-        const auto isPlayerRight = playerBody.position.x > 0 ? true : false;
-        core::Vec2f velocityAfterCollisionWithPlayer;
-        if(ballBody.velocity.x < 0 && isPlayerLeft)
-        {
-            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
-            currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
-        }
-        else if(ballBody.velocity.x > 0 && isPlayerRight)
-        {
-            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
-            currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithPlayer));
-        }*/
-        //ManageCollision(player, entity1, ball, entity2);
     }
     if (entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)) &&
         entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
         ManageCollisionBetweenBallAndPlayer(entity1, entity2);
-        /*const auto& ballBody = currentPhysicsManager_.GetBody(entity1);
-        const auto& playerBody = currentPhysicsManager_.GetBody(entity2);
-        const auto isPlayerLeft = playerBody.position.x < 0 ? true : false;
-        const auto isPlayerRight = playerBody.position.x > 0 ? true : false;
-        core::Vec2f velocityAfterCollisionWithPlayer;
-        if (ballBody.velocity.x < 0 && isPlayerLeft)
-        {
-            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
-            currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithPlayer));
-        }
-        else if (ballBody.velocity.x > 0 && isPlayerRight)
-        {
-            velocityAfterCollisionWithPlayer = core::Vec2f(-ballBody.velocity.x, ballBody.velocity.y) * ballRatioSpeedIncrease;
-            currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithPlayer));
-        }*/
-        //ManageCollision(player, entity2, ball, entity1);
     }
 
+    //we manage collision between the ball and boundaries
     if(entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BOUNDARY)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
         ManageCollisionBetweenBallAndBoundary(entity2);
-        //const auto& ballBody = currentPhysicsManager_.GetBody(entity2);
-        //const auto velocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
-        //currentPhysicsManager_.SetBody(entity2, Body(ballBody.position, velocityAfterCollisionWithBoundary));
     }
     if (entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BOUNDARY)) &&
         entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
         ManageCollisionBetweenBallAndBoundary(entity1);
-        //const auto& ballBody = currentPhysicsManager_.GetBody(entity1);
-        //const auto velocityAfterCollisionWithBoundary = core::Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
-        //currentPhysicsManager_.SetBody(entity1, Body(ballBody.position, velocityAfterCollisionWithBoundary));
     }
 
+    //we manage collision between the ball and homes
     if(entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::HOME)) &&
         entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::BALL)))
     {
@@ -584,7 +523,7 @@ void RollbackManager::SpawnBall(core::Entity entity, core::Vec2f position, core:
 
 
     currentBallManager_.AddComponent(entity);
-    currentBallManager_.SetComponent(entity, { 0,startPlayerNumber });
+    currentBallManager_.SetComponent(entity, { startPlayerNumber });
 
     currentPhysicsManager_.AddBody(entity);
     currentPhysicsManager_.SetBody(entity, ballBody);
@@ -592,7 +531,7 @@ void RollbackManager::SpawnBall(core::Entity entity, core::Vec2f position, core:
     currentPhysicsManager_.SetBox(entity, ballBox);
 
     lastValidateBallManager_.AddComponent(entity);
-    lastValidateBallManager_.SetComponent(entity, { 0,startPlayerNumber });
+    lastValidateBallManager_.SetComponent(entity, { startPlayerNumber });
 
     lastValidatePhysicsManager_.AddBody(entity);
     lastValidatePhysicsManager_.SetBody(entity, ballBody);

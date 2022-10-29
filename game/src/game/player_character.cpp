@@ -27,27 +27,20 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
             static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
             continue;
         auto playerBody = physicsManager_.GetBody(playerEntity);
-        auto playerBox = physicsManager_.GetBox(playerEntity);
+        const auto playerBox = physicsManager_.GetBox(playerEntity);
         auto playerCharacter = GetComponent(playerEntity);
         const auto input = playerCharacter.input;
 
-        const bool right = input & PlayerInputEnum::PlayerInput::RIGHT;
-        const bool left = input & PlayerInputEnum::PlayerInput::LEFT;
         const bool up = (input & PlayerInputEnum::PlayerInput::UP) && playerBody.position.y + playerBox.extends.y < topBoundaryPos.y;
         const bool down = (input & PlayerInputEnum::PlayerInput::DOWN) && playerBody.position.y - playerBox.extends.y > bottomBoundaryPos.y;
-        const auto angularVelocity = ((left ? -1.0f : 0.0f) + (right ? 1.0f : 0.0f)) * playerAngularSpeed;
-
-        playerBody.angularVelocity = 0;
 
         auto dir = core::Vec2f::up();
         dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.asSeconds()));
 
-        //const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
-        auto velocity = ((down ? core::Vec2f(0, -playerSpeed * playerCharacter.speedMultiplier) : core::Vec2f::zero() +
-									(up ? core::Vec2f(0, playerSpeed * playerCharacter.speedMultiplier) : core::Vec2f::zero())));
+        auto velocity = ((down ? core::Vec2f(0, -playerSpeed) : core::Vec2f::zero() +
+									(up ? core::Vec2f(0, playerSpeed) : core::Vec2f::zero())));
 
         playerBody.velocity = velocity * dt.asSeconds();
-
         physicsManager_.SetBody(playerEntity, playerBody);
 
         if (playerCharacter.hurtTime > 0.0f)
@@ -55,33 +48,6 @@ void PlayerCharacterManager::FixedUpdate(sf::Time dt)
             playerCharacter.hurtTime -= dt.asSeconds();
             SetComponent(playerEntity, playerCharacter);
         }
-        
-
-        //Check if playerCharacter cannot shoot, and increase shootingTime
-        /*if (playerCharacter.shootingTime < playerShootingPeriod)
-        {
-            playerCharacter.shootingTime += dt.asSeconds();
-            SetComponent(playerEntity, playerCharacter);
-        }
-        */
-        //Shooting mechanism
-        /*/if (playerCharacter.shootingTime >= playerShootingPeriod)
-        {
-            if (input & PlayerInputEnum::PlayerInput::SHOOT)
-            {
-                const auto current
-                = playerBody.velocity.GetMagnitude();
-                const auto bulletVelocity = dir *
-                    ((core::Vec2f::Dot(playerBody.velocity, dir) > 0.0f ? currentPlayerSpeed : 0.0f)
-                        + ballSpeed);
-                const auto bulletPosition = playerBody.position + dir * 0.5f + playerBody.velocity * dt.asSeconds();
-                gameManager_.SpawnBall(playerCharacter.playerNumber,
-                    bulletPosition,
-                    bulletVelocity);
-                playerCharacter.shootingTime = 0.0f;
-                SetComponent(playerEntity, playerCharacter);
-            }
-        }*/
     }
 }
 }

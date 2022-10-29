@@ -42,14 +42,14 @@ using Frame = std::uint32_t;
 constexpr core::Vec2f topBoundaryPos(0.f, 4.3f);
 constexpr core::Vec2f bottomBoundaryPos(0.f, -4.3f);
 constexpr float boundaryScaleX = 1000.f; //box scale, not transform scale
-constexpr float boundaryScaleY = 1000.f; //box scale, not transform scale //O.O25f
+constexpr float boundaryScaleY = 1000.f; //box scale, not transform scale 
 
 /**
 * brief homes global data 
 */
 constexpr core::Vec2f leftHomePos(-9.5f, 0.f);
 constexpr core::Vec2f rightHomePos(9.5f, 0.f);
-constexpr float homeScaleX = 500.f; //box scale, not transform scale  //0.05f;
+constexpr float homeScaleX = 500.f; //box scale, not transform scale  
 constexpr float homeScaleY = 4.25f; //box scale, not transform scale
 /**
 * brief healthbars global data
@@ -76,10 +76,11 @@ constexpr float ballMaxSpeed = 25.f;
 constexpr float ballInitialSpeed = 3.f;
 constexpr float ballRatioSpeedIncrease = 1.15f;
 constexpr float ballScale = 0.75f; //transform scale only
-constexpr core::Color ballStartColor = core::Color::transparent();
+constexpr core::Color ballColorBeforeGameStart = core::Color::transparent();
+constexpr core::Color ballColorAfterGameStart = core::Color::black();
 constexpr float ballLeftRespawnX = -8.5f;
 constexpr float ballRightRespawnX = 8.5f;
-//constexpr float bulletPeriod = 3.0f;
+
 
 /**
  * \brief windowBufferSize is the size of input stored by a client. 5 seconds of frame at 50 fps
@@ -150,7 +151,6 @@ enum PlayerInput : std::uint8_t
     DOWN = 1u << 1u,
     LEFT = 1u << 2u,
     RIGHT = 1u << 3u,
-    SHOOT = 1u << 4u,
 };
 }
 }
